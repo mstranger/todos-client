@@ -1,12 +1,47 @@
 <script setup>
+  import { ref } from "vue"
+
+  const error = ref("")
+
+  const handleSignIn = async (e) => {
+    const emailField = e.target.querySelector("input[name=email]")
+    const passwordField = e.target.querySelector("input[name=password]")
+
+    removeInvalidClass(emailField, passwordField)
+
+    const response = await fetch("http://localhost:3000/auth/login", {
+      method: "POST",
+      body: new FormData(e.target)
+    })
+
+    const data = await response.json()
+
+    if (data.error) {
+      emailField.classList.add("invalid")
+      passwordField.classList.add("invalid")
+      error.value = data.error
+    } else {
+      console.log(data)
+    }
+  }
+
+  const removeInvalidClass = (...fields) => {
+    fields.forEach(t => t.classList.remove("invalid"))
+    error.value = ""
+  }
 </script>
 
 <template>
   <div class="d-flex justify-content-center align-items-center h-100 parent">
-    <form class="col-4">
+    <form class="col-4" @submit.prevent="handleSignIn">
       <h3 class="mb-3">Sign In</h3>
-      <input type="text" class="form-control form-control-lg mb-2" placeholder="User name">
-      <input type="text" class="form-control form-control-lg" placeholder="Password">
+      <div class="mb-2 text-danger">{{ error }}</div>
+
+      <input type="email" name="email" class="form-control form-control-lg mb-2"
+             placeholder="User name">
+      <input type="password" name="password" class="form-control form-control-lg"
+             placeholder="Password">
+
       <button type="submit" class="btn btn-lg btn-primary my-3">Sign In</button>
       <div class="form-text mt-0">
         Don't have an account?
