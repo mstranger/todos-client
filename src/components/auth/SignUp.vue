@@ -2,7 +2,7 @@
 </script>
 
 <template>
-  <div class="d-flex justify-content-center align-items-center h-100 vh-100">
+  <div class="d-flex justify-content-center align-items-center h-100 parent">
     <form class="col-4">
       <h3 class="mb-3">Sign Up</h3>
       <input type="text" class="form-control form-control-lg mb-2" placeholder="User name">
@@ -18,4 +18,7 @@
 </template>
 
 <style scoped>
+  .parent {
+    min-height: calc(100vh - 4em);
+  }
 </style>
