@@ -1,12 +1,11 @@
 <script setup>
   import WelcomeItem from "@/components/WelcomeItem.vue"
+  import SignUp from "@/components/auth/SignUp.vue"
 </script>
 
 <template>
-  Test message
-
   <div>
-    <WelcomeItem />
+    <SignUp />
   </div>
 </template>
 
