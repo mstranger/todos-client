@@ -2,17 +2,18 @@
 </script>
 
 <template>
-  <form>
-    <h2>Sign In</h2>
-
-    <input type="text" placeholder="User name">
-    <input type="text" placeholder="Password">
-
-    <button type="submit">Sign In</button>
-    <small>
-      Don't have an account? <a href="#">Sign up</a>
-    </small>
-  </form>
+  <div class="d-flex justify-content-center align-items-center h-100 vh-100">
+    <form class="col-4">
+      <h3 class="mb-3">Sign In</h3>
+      <input type="text" class="form-control form-control-lg mb-2" placeholder="User name">
+      <input type="text" class="form-control form-control-lg" placeholder="Password">
+      <button type="submit" class="btn btn-lg btn-primary my-3">Sign In</button>
+      <div class="form-text mt-0">
+        Don't have an account?
+        <router-link to="signup">Sign up</router-link>
+      </div>
+    </form>
+  </div>
 </template>
 
 <style scoped>
