@@ -1,7 +1,11 @@
 <script setup>
   import { ref } from "vue"
+  import { useRouter } from "vue-router"
+  import { useAuthStore } from "@/store"
 
   const error = ref("")
+  const store = useAuthStore()
+  const router = useRouter()
 
   const handleSignIn = async (e) => {
     const emailField = e.target.querySelector("input[name=email]")
@@ -21,7 +25,8 @@
       passwordField.classList.add("invalid")
       error.value = data.error
     } else {
-      console.log(data)
+      store.login(data.token)
+      router.push({ name: "root" })
     }
   }
 
