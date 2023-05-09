@@ -1,16 +1,18 @@
 import { createRouter, createWebHistory } from "vue-router"
+// import { useAuthStore } from "@/store"
 
 import SignUp from "@/components/auth/SignUp.vue"
 import SignIn from "@/components/auth/SignIn.vue"
-import RootHero from "@/components/general/RootHero.vue"
+import RootView from "@/views/general/RootView.vue"
 
-export default createRouter({
+const router = createRouter({
   history: createWebHistory(),
   routes: [
     {
       path: "/",
       name: "root",
-      component: RootHero
+      component: RootView,
+      alias: "/projects"
     },
     {
       path: "/auth/signup",
@@ -24,3 +26,18 @@ export default createRouter({
     }
   ]
 })
+
+// router.beforeEach(to => {
+//   const restricted = ["/projects"]
+//   const authRequired = restricted.includes(to.path)
+//   const store = useAuthStore()
+
+//   if (authRequired && !store.isAuthenticted) {
+//     router.push({
+//       name: "root",
+//       query: { redirect: to.path }
+//     })
+//   }
+// })
+
+export default router

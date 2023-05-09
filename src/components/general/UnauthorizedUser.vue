@@ -1,6 +1,3 @@
-<script setup>
-</script>
-
 <template>
   <div class="container">
     <div class="d-flex flex-column align-items-center mt-5">
@@ -15,6 +12,3 @@
     </div>
   </div>
 </template>
-
-<style scoped>
-</style>
