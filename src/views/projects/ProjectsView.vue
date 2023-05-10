@@ -27,12 +27,24 @@
 
     <h2 class="my-4">Projects</h2>
 
-    <ul>
+    <!-- <ul>
       <li v-for="project in projects" :key="project.id">
         <ProjectItem :data="project.data" />
       </li>
-    </ul>
+    </ul> -->
 
-    <input type="text" class="form-control form-control-lg" placeholder="Enter Project name ...">
+    <ProjectItem v-for="project in projects" :key="project.id" :data="project.data" />
+
+    <input type="text" class="form-control form-control-lg new-project" placeholder="Enter Project name ...">
   </div>
 </template>
+
+<style scope>
+  .new-project {
+    border-radius: 0 !important;
+  }
+
+  .new-project:focus {
+    box-shadow: none;
+  }
+</style>
