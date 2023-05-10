@@ -11,7 +11,9 @@ const currentUser = computed(() => store.isAuthenticated)
 <template>
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container">
-      <div class="navbar-brand">Tasks</div>
+      <div class="navbar-brand">
+        <router-link to="/" class="text-decoration-none text-dark">Tasks</router-link>
+      </div>
       <div class="ms-auto" v-if="currentUser">
         <LogoutUser title="Logout" />
       </div>

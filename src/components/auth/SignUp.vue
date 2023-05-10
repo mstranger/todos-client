@@ -3,6 +3,7 @@
 
   const requiredField = ref("")
   const errors = ref([])
+  const success = ref(false)
 
   const handleSignUp = async (e) => {
     if (checkEmptyInputs()) {
@@ -10,6 +11,7 @@
       return false
     }
 
+    requiredField.value = ""
     errors.value = []
 
     const response = await fetch("http://localhost:3000/auth/signup", {
@@ -23,7 +25,7 @@
       errors.value = data.errors
       addInvalidClass(data.errors, "email", "password", "password_confirmation")
     } else {
-      console.log(data)
+      success.value = true
     }
   }
 
@@ -69,6 +71,11 @@
         <ul class="list-unstyled">
           <li v-for="(error, idx) in errors" :key="idx" class="mb-1">{{ error }}</li>
         </ul>
+      </div>
+
+      <div class="alert alert-success" v-if="success">
+        <strong>Well done!</strong>
+        You've successfully registered. You can <router-link :to="{ name: 'signin' }">login</router-link> now
       </div>
 
       <input type="email" name="email" class="form-control form-control-lg mb-2"

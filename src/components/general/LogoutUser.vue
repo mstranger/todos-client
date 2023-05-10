@@ -1,10 +1,16 @@
 <script setup>
   import { useAuthStore } from "@/store"
   const store = useAuthStore()
+
+  const logout = () => {
+    const answer = confirm("You are going to logout. Continue?")
+    if (!answer) return
+    store.logout()
+  }
 </script>
 
 <template>
-  <button class="btn" @click="store.logout">
+  <button class="btn" @click="logout">
     <svg
       xmlns="http://www.w3.org/2000/svg"
       width="20"

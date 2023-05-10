@@ -21,6 +21,7 @@
   -moz-osx-font-smoothing: grayscale;
 } */
 
+.alert,
 .btn,
 .form-control {
   border-radius: 0.175em !important;

@@ -8,6 +8,7 @@
 </script>
 
 <template>
-  <UnauthorizedUser v-if="!store.isAuthenticated" />
-  <ProjectsView v-else />
+  <!-- <UnauthorizedUser v-if="!store.isAuthenticated" /> -->
+  <!-- <ProjectsView v-else /> -->
+  <ProjectsView />
 </template>
