@@ -29,6 +29,7 @@
   // TODO: add visual loader
 
   const handleCreateProject = async (e) => {
+    notice.value = ""
     errors.value = []
 
     const data = new FormData(e.target)
@@ -53,6 +54,7 @@
 
   const handleDeleteProject = async (projectId) => {
     notice.value = ""
+    errors.value = []
 
     // TODO: confirmation via vue component
     const yes = confirm("You are going to delete the project. Are you sure?")
@@ -85,6 +87,11 @@
         console.log(`Undefined type: ${type}`)
     }
   }
+
+  const handleErrors = (messages) => {
+    notice.value = ""
+    errors.value = messages
+  }
 </script>
 
 <template>
@@ -108,7 +115,8 @@
     <ProjectItem v-for="project in projects"
       :key="project.data.id"
       :data="project.data"
-      @delete-project="handleDeleteProject" />
+      @delete-project="handleDeleteProject"
+      @handle-errors="handleErrors" />
 
     <form @submit.prevent="handleCreateProject">
       <input type="text"

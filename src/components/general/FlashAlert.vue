@@ -6,8 +6,8 @@
 </script>
 
 <template>
-  <div class="d-flex me-2" :class="`alert alert-${type}`">
-    {{ message }}
+  <div class="d-flex" :class="`alert alert-${type}`">
+    <span class="me-2">{{ message }}</span>
 
     <span class="ms-auto" title="Close" @click="$emit('clearMessages', type)">
       <i class="bi bi-x-circle"></i>
