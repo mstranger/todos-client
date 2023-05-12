@@ -34,10 +34,11 @@
 
   // TODO: edit via new component?
   const handleEditProject = () => {
+    const elem = target.value
     editMode.value = true
-    oldProjectName.value = target.value.innerText.trim()
-    target.value.setAttribute("contenteditable", true)
-    target.value.focus()
+    oldProjectName.value = elem.innerText.trim()
+    elem.setAttribute("contenteditable", true)
+    elem.focus()
   }
 
   const handleSaveEdit = async () => {

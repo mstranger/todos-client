@@ -51,7 +51,8 @@
     <ul class="list-unstyled tasks-list mb-0">
       <TaskItem v-for="(task, idx) in data"
         :key="idx" :data="task" :projectId="props.projectId"
-        @refresh-tasks="$emit('refreshTasks', props.projectId)" />
+        @refresh-tasks="$emit('refreshTasks', props.projectId)"
+        @handle-errors="errors=$event" />
 
       <li>
         <form @submit.prevent="handleCreateTask">
