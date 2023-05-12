@@ -1,6 +1,6 @@
 <script setup>
   import { ref, onMounted } from "vue"
-  import TaskItem from "@/components/projects/TaskItem.vue"
+  import TasksIndex from "@/components/tasks/TasksIndex.vue"
 
   const emit = defineEmits(['handleErrors', 'deleteProject'])
 
@@ -16,19 +16,19 @@
   const target = ref(null)
   const oldProjectName = ref("")
 
-  onMounted(async () => {
-    const requestTasks = async projectId => {
-      let response = await fetch(`http://localhost:3000/api/v1/projects/${projectId}/tasks`, {
-        method: "GET",
-        headers: { Authorization: `HS256 ${utoken}` }
-      })
+  onMounted(() => requestTasks(props.data.id))
 
-      return await response.json()
-    }
+  const requestTasks = async (projectId) => {
+    let response = await fetch(`http://localhost:3000/api/v1/projects/${projectId}/tasks`, {
+      method: "GET",
+      headers: { Authorization: `HS256 ${utoken}` }
+    })
 
-    const response = await requestTasks(props.data.id)
-    tasks.value = response.data.map(t => t.data.attributes)
-  })
+    response = await response.json()
+    tasks.value = response.data.map(t => {
+      return { ...t.data.attributes, id: t.data.id }
+    })
+  }
 
   /* actions */
 
@@ -107,13 +107,10 @@
       <button class="btn btn-lg" @click="handleCancelEdit">Cancel</button>
     </div>
 
-    <div class="project-body" v-if="!closed">
-      <ul class="list-unstyled tasks-list">
-        <TaskItem :data="task" v-for="(task, idx) in tasks" :key="idx" />
-      </ul>
-
-      <input type="text" class="form-control new-task" placeholder="Enter Task name ..." >
-    </div>
+    <TasksIndex v-if="!closed"
+      :data="tasks"
+      :projectId="props.data.id"
+      @refreshTasks="requestTasks" />
   </div>
 </template>
 
@@ -137,25 +134,6 @@
 
   .project-header:hover {
     cursor: pointer;
-  }
-
-  .tasks-list {
-    margin-bottom: 0;
-  }
-
-  .new-task {
-    line-height: 3em;
-    padding: 0;
-    padding-left: 1em;
-    border-radius: 0 !important;
-  }
-
-  .new-task:focus {
-    box-shadow: none;
-  }
-
-  .new-task::placeholder {
-    color: #acacac;
   }
 
   .bi-pencil-fill:hover,

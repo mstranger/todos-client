@@ -1,7 +1,12 @@
 <script setup>
   const props = defineProps({
-    data: Object
+    data: {type: Object, required: true},
+    projectId: {type: Number, required: true}
   })
+
+  const emit = defineEmits(["refreshTasks"])
+
+  const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
 
   /* actions */
 
@@ -17,8 +22,23 @@
     console.log("edit task")
   }
 
-  const handleDeleteTask = () => {
-    console.log("delete task")
+  const handleDeleteTask = async () => {
+    // TODO: confirmation via vue component
+    const yes = confirm("Are you sure you want to delete this task?")
+    if (!yes) return
+
+    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
+      method: "DELETE",
+      headers: { "Authorization": `HS256 ${utoken}` }
+    })
+
+    response = await response.json()
+
+    if (response.error) {
+      console.error(response.error)
+    } else {
+      emit("refreshTasks")
+    }
   }
 
   const handleTaskUp = () => {

@@ -129,8 +129,7 @@
         name="data[name]"
         class="form-control form-control-lg new-project mb-2"
         placeholder="Enter Project name ..."
-        v-model="newProject"
-        @keydown.escape="handleCancelNewProject">
+        v-model="newProject">
 
       <div v-if="newProject">
         <button type="submit"
