@@ -62,8 +62,4 @@
     color: firebrick;
     cursor: pointer;
   }
-
-  .project--task-item:last-child {
-    /* border-bottom: 1px solid lightgray; */
-  }
 </style>

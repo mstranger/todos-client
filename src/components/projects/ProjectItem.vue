@@ -43,6 +43,8 @@
   const handleSaveEdit = async () => {
     const newProjectName = target.value.innerText.trim()
 
+    emit("handleErrors", [])
+
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.data.id}`, {
       method: "PUT",
       headers: {
@@ -86,7 +88,9 @@
       <span class="ps-3" v-else><i class="bi bi-caret-down-fill"></i></span>
 
       <div ref="target" class="project-name ms-1 px-2" contenteditable="false"
-           @click="e => {if (editMode) e.stopPropagation()}" @keydown.enter="handleEnter">
+           @click="e => {if (editMode) e.stopPropagation()}"
+           @keydown.enter="handleEnter"
+           @keyup.escape="handleCancelEdit">
         {{ props.data.attributes.name }}
       </div>
 

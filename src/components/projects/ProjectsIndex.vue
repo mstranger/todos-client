@@ -52,6 +52,12 @@
     }
   }
 
+  const handleCancelNewProject = () => {
+    newProject.value = ""
+    handleErrors([])
+    document.activeElement.blur()
+  }
+
   const handleDeleteProject = async (projectId) => {
     notice.value = ""
     errors.value = []
@@ -123,14 +129,15 @@
         name="data[name]"
         class="form-control form-control-lg new-project mb-2"
         placeholder="Enter Project name ..."
-        v-model="newProject" >
+        v-model="newProject"
+        @keydown.escape="handleCancelNewProject">
 
       <div v-if="newProject">
         <button type="submit"
           class="btn btn-lg btn-primary">Create Project</button>
         <button type="reset"
           class="btn btn-lg"
-          @click.prevent="newProject=''">Cancel</button>
+          @click.prevent="handleCancelNewProject">Cancel</button>
       </div>
     </form>
   </div>
