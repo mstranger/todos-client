@@ -6,7 +6,8 @@
     projectId: {type: Number, required: true}
   })
 
-  const emit = defineEmits(["refreshTasks", "handleErrors", "updateCompletedCount"])
+  // TODO: refreshTasks
+  const emit = defineEmits(["refreshTasks", "deleteTask", "handleErrors", "updateCompletedCount", "refreshTask"])
 
   const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
 
@@ -47,7 +48,8 @@
     if (response.error) {
       console.error(response.error)
     } else {
-      emit("refreshTasks")
+      // TODO: here delete from parent data props
+      emit("deleteTask", props.data.id)
     }
   }
 
@@ -83,6 +85,7 @@
       return
     }
 
+    emit("refreshTask", props.data.id)
     resetEditMode()
   }
 
@@ -100,6 +103,7 @@
     }
 
     emit("updateCompletedCount", e.target.checked === true ? 1 : -1)
+    emit("refreshTask", props.data.id)
   }
 
   const handleEnter = (e) => {

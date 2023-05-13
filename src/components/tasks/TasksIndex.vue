@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, onUnmounted } from "vue"
+  import { ref, watch } from "vue"
   import TaskItem from "@/components/tasks/TaskItem.vue"
 
   const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
@@ -11,11 +11,30 @@
 
   const emit = defineEmits(["refreshTasks", "updateCompletedCount"])
 
+  const tasks = ref(props.data)
   const newTask = ref("")
   const errors = ref([])
 
-  // TODO: refresh task only when check/uncheck
-  onUnmounted(() => emit("refreshTasks", props.projectId))
+  watch(() => props.data, () => tasks.value = props.data)
+
+  const refreshTask = async (taskId) => {
+    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${taskId}`, {
+      method: "GET",
+      headers: { "Authorization": `HS256 ${utoken}` }
+    })
+
+    response = await response.json()
+
+    const elem = {...response.data.attributes, id: response.data.id}
+    const idx = props.data.findIndex(t => t.id === elem.id)
+
+    tasks.value.splice(idx, 1, elem)
+  }
+
+  const deleteTask = (taskId) => {
+    const idx = props.data.findIndex(t => t.id === taskId)
+    tasks.value.splice(idx, 1)
+  }
 
   /* actions */
 
@@ -52,10 +71,12 @@
 <template>
   <div>
     <ul class="list-unstyled tasks-list mb-0">
-      <TaskItem v-for="(task, idx) in data"
+      <TaskItem v-for="(task, idx) in tasks"
         :key="idx" :data="task" :projectId="props.projectId"
         @refresh-tasks="$emit('refreshTasks', props.projectId)"
         @handle-errors="errors=$event"
+        @refresh-task="refreshTask"
+        @delete-task="deleteTask"
         @update-completed-count="$emit('updateCompletedCount', $event)"/>
 
       <li>

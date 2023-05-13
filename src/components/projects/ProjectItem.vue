@@ -21,6 +21,10 @@
 
   onMounted(() => requestTasks(props.data.id))
 
+  const allTasksDone = computed(() =>
+    totalTaskCount.value == completedTaskCount.value
+  )
+
   const requestTasks = async (projectId) => {
     let response = await fetch(`http://localhost:3000/api/v1/projects/${projectId}/tasks`, {
       method: "GET",
@@ -35,10 +39,6 @@
     totalTaskCount.value = tasks.value.length
     completedTaskCount.value = tasks.value.filter(t => t.completed === true).length
   }
-
-  const allTasksDone = computed(() => {
-    return totalTaskCount.value === completedTaskCount.value
-  })
 
   /* actions */
 
