@@ -6,7 +6,7 @@
     projectId: {type: Number, required: true}
   })
 
-  const emit = defineEmits(["refreshTasks", "handleErrors"])
+  const emit = defineEmits(["refreshTasks", "handleErrors", "updateCompletedCount"])
 
   const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
 
@@ -86,6 +86,22 @@
     resetEditMode()
   }
 
+  const handleToggleCheck = async (e) => {
+    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}/toggle`, {
+      method: "POST",
+      headers: { Authorization: `HS256 ${utoken}` }
+    })
+
+    response = await response.json()
+
+    if (response.error) {
+      console.error(response.error)
+      return
+    }
+
+    emit("updateCompletedCount", e.target.checked === true ? 1 : -1)
+  }
+
   const handleEnter = (e) => {
     e.preventDefault()
     handleSaveEdit()
@@ -112,8 +128,10 @@
       <i class="bi bi-arrow-down-short position-absolute" style="top: 1.5em"
          @click="handleTaskDown"></i>
     </span>
-    <input type="checkbox" class="task-check ms-4 me-1">
-    <span ref="target" class="me-2 px-2"
+    <input type="checkbox" class="task-check ms-4 me-1"
+           :checked="props.data.completed"
+           @change="handleToggleCheck">
+    <span ref="target" class="me-2 px-2 task-title"
           contenteditable="false"
           @keydown.enter="handleEnter">
       {{ props.data.title }}
@@ -157,5 +175,9 @@
   .task-actions .bi:hover {
     color: firebrick;
     cursor: pointer;
+  }
+
+  .task-check:checked + .task-title {
+    text-decoration: line-through;
   }
 </style>

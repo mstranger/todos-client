@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, onMounted } from "vue"
+  import { ref, onMounted, computed } from "vue"
   import TasksIndex from "@/components/tasks/TasksIndex.vue"
 
   const emit = defineEmits(['handleErrors', 'deleteProject'])
@@ -16,6 +16,9 @@
   const target = ref(null)
   const oldProjectName = ref("")
 
+  const totalTaskCount = ref(0)
+  const completedTaskCount = ref(0)
+
   onMounted(() => requestTasks(props.data.id))
 
   const requestTasks = async (projectId) => {
@@ -28,7 +31,14 @@
     tasks.value = response.data.map(t => {
       return { ...t.data.attributes, id: t.data.id }
     })
+
+    totalTaskCount.value = tasks.value.length
+    completedTaskCount.value = tasks.value.filter(t => t.completed === true).length
   }
+
+  const allTasksDone = computed(() => {
+    return totalTaskCount.value === completedTaskCount.value
+  })
 
   /* actions */
 
@@ -80,11 +90,21 @@
     target.value.setAttribute("contenteditable", false)
     oldProjectName.value = ""
   }
+
+  const updateCompletedTaskCount = (n) => {
+    completedTaskCount.value += n
+  }
 </script>
 
 <template>
   <div class="project">
-    <header class="project-header d-flex" @click="closed = !closed">
+    <header class="project-header d-flex position-relative" @click="closed = !closed">
+      <span v-if="allTasksDone"
+            class="d-block position-absolute text-success"
+            style="top: -0.85em; left: 0.25em">
+        <i class="bi bi-check-all"></i>
+      </span>
+
       <span class="ps-3" v-if="closed"><i class="bi bi-caret-right-fill"></i></span>
       <span class="ps-3" v-else><i class="bi bi-caret-down-fill"></i></span>
 
@@ -111,7 +131,8 @@
     <TasksIndex v-if="!closed"
       :data="tasks"
       :projectId="props.data.id"
-      @refreshTasks="requestTasks" />
+      @refreshTasks="requestTasks"
+      @update-completed-count="updateCompletedTaskCount" />
   </div>
 </template>
 

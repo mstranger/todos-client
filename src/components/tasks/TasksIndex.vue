@@ -1,5 +1,5 @@
 <script setup>
-  import { ref } from "vue"
+  import { ref, onUnmounted } from "vue"
   import TaskItem from "@/components/tasks/TaskItem.vue"
 
   const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
@@ -9,10 +9,13 @@
     projectId: {type: Number, required: true}
   })
 
-  const emit = defineEmits(["refreshTasks"])
+  const emit = defineEmits(["refreshTasks", "updateCompletedCount"])
 
   const newTask = ref("")
   const errors = ref([])
+
+  // TODO: refresh task only when check/uncheck
+  onUnmounted(() => emit("refreshTasks", props.projectId))
 
   /* actions */
 
@@ -52,7 +55,8 @@
       <TaskItem v-for="(task, idx) in data"
         :key="idx" :data="task" :projectId="props.projectId"
         @refresh-tasks="$emit('refreshTasks', props.projectId)"
-        @handle-errors="errors=$event" />
+        @handle-errors="errors=$event"
+        @update-completed-count="$emit('updateCompletedCount', $event)"/>
 
       <li>
         <form @submit.prevent="handleCreateTask">
