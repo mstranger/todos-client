@@ -23,6 +23,7 @@
 
   const handleEditDeadline = () => {
     console.log("deadline")
+    console.log(props.data)
   }
 
   const handleEditTask = () => {
@@ -53,12 +54,30 @@
     }
   }
 
-  const handleTaskUp = () => {
-    console.log("task up")
-  }
 
-  const handleTaskDown = () => {
-    console.log("task down")
+  // TODO: think about change position
+  const handleChangePriority = async (n) => {
+    let taskPriority = props.data.priority
+
+    if (taskPriority === 0 && n === -1) return
+
+    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
+      method: "PUT",
+      headers: {
+        Authorization: `HS256 ${utoken}`,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: `data[priority]=${taskPriority + n}`
+    })
+
+    response = await response.json()
+
+    if (response.error) {
+      console.log(response.error)
+      return
+    }
+
+    emit("refreshTask", props.data.id)
   }
 
   // TODO: move the url path to other file
@@ -128,9 +147,9 @@
   <li class="project--task-item d-flex">
     <span class="task-actions position-relative">
       <i class="bi bi-arrow-up-short position-absolute" style="top: 0.5em"
-         @click="handleTaskUp"></i>
+         @click="handleChangePriority(1)"></i>
       <i class="bi bi-arrow-down-short position-absolute" style="top: 1.5em"
-         @click="handleTaskDown"></i>
+         @click="handleChangePriority(-1)"></i>
     </span>
     <input type="checkbox" class="task-check ms-4 me-1"
            :checked="props.data.completed"

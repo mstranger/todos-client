@@ -28,7 +28,16 @@
     const elem = {...response.data.attributes, id: response.data.id}
     const idx = props.data.findIndex(t => t.id === elem.id)
 
+    // replace task with a new one
     tasks.value.splice(idx, 1, elem)
+
+    // sort tasks
+    tasks.value.sort((t1, t2) => {
+      if (t1.priority === t2.priority)
+        return new Date(t1.created_at) - new Date(t2.created_at)
+
+      return t2.priority - t1.priority
+    })
   }
 
   const deleteTask = (taskId) => {
