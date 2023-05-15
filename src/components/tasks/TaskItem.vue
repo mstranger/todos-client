@@ -1,5 +1,6 @@
 <script setup>
-  import { ref } from "vue"
+  import { ref, computed } from "vue"
+  import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 
   const props = defineProps({
     data: {type: Object, required: true},
@@ -14,16 +15,29 @@
   const target = ref(null)
   const editMode = ref(false)
   const oldTaskTitle = ref("")
+  const datetimeActive = ref(false)
+  const timeValue = ref("00:00")
+  const dateValue = ref("")
+
+  // TODO: here
+  const urgent = computed(() => {
+    if (props.data.deadline && dateValue.value && props.data.deadline.toLocaleDateString() === dateValue.value.toLocaleDateString()) {
+      return true
+    }
+
+    return false
+  })
 
   /* actions */
 
   const handleComments = () => {
     console.log("comments")
+    console.log(timeValue.value)
+    console.log(dateValue.value)
   }
 
   const handleEditDeadline = () => {
-    console.log("deadline")
-    console.log(props.data)
+    datetimeActive.value = !datetimeActive.value
   }
 
   const handleEditTask = () => {
@@ -144,8 +158,8 @@
 </script>
 
 <template>
-  <li class="project--task-item d-flex">
-    <span class="task-actions position-relative">
+  <li class="project--task-item position-relative d-flex align-items-center">
+    <span class="task-actions">
       <i class="bi bi-arrow-up-short position-absolute" style="top: 0.5em"
          @click="handleChangePriority(1)"></i>
       <i class="bi bi-arrow-down-short position-absolute" style="top: 1.5em"
@@ -154,17 +168,22 @@
     <input type="checkbox" class="task-check ms-4 me-1"
            :checked="props.data.completed"
            @change="handleToggleCheck">
-    <span ref="target" class="me-2 px-2 task-title"
-          contenteditable="false"
-          @keydown.enter="handleEnter">
-      {{ props.data.title }}
-    </span>
+    <div class="me-2 px-2 d-flex flex-column justify-content-center">
+      <span class="task-title" ref="target" contenteditable="false"
+          @keydown.enter="handleEnter">{{ props.data.title }}</span>
+      <span class="form-text" :class="urgent ? 'text-danger' : 'text-success'" v-if="dateValue">{{ `${dateValue} ${timeValue}` }}</span>
+    </div>
     <span class="task-actions ms-auto me-2" @click="e => e.stopPropagation()">
       <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="handleComments"></i>
       <i class="bi bi-clock me-3" @click="handleEditDeadline"></i>
       <i class="bi bi-pencil-fill me-3" @click="handleEditTask"></i>
       <i class="bi bi-trash" style="font-size: 1.0725em" @click="handleDeleteTask"></i>
     </span>
+
+    <DeadlineForm v-if="datetimeActive"
+      @close-deadline-form="datetimeActive=false"
+      v-model:time="timeValue"
+      v-model:date="dateValue"/>
   </li>
   <li class="project--task-item-buttons p-3" v-if="editMode">
     <button class="btn btn-lg btn-success px-4"
@@ -178,7 +197,8 @@
   .project--task-item {
     border: 1px solid lightgray;
     border-bottom: none;
-    line-height: 3em;
+    /* line-height: 3em; */
+    min-height: 3em;
   }
 
   .project--task-item-buttons {
@@ -202,5 +222,9 @@
 
   .task-check:checked + .task-title {
     text-decoration: line-through;
+  }
+
+  .form-text {
+    font-size: 0.75em;
   }
 </style>

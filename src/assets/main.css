@@ -26,6 +26,7 @@
 
 .alert,
 .btn,
+.card,
 .form-control {
   border-radius: 0.175em !important;
 }
