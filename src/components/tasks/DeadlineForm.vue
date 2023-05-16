@@ -15,7 +15,7 @@ onMounted(() => {
 const handleSaveDeadline = () => {
   emit("update:date", dateField.value)
   emit("update:time", timeField.value)
-  emit("closeDeadlineForm")
+  emit("closeDeadlineForm", {saveDB: true})
 }
 </script>
 

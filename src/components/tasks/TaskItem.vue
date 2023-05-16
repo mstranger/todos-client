@@ -1,5 +1,5 @@
 <script setup>
-  import { ref, computed } from "vue"
+  import { ref, computed, onMounted } from "vue"
   import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 
   const props = defineProps({
@@ -19,21 +19,28 @@
   const timeValue = ref("00:00")
   const dateValue = ref("")
 
-  // TODO: here
-  const urgent = computed(() => {
-    if (props.data.deadline && dateValue.value && props.data.deadline.toLocaleDateString() === dateValue.value.toLocaleDateString()) {
-      return true
-    }
+  onMounted(() => {
+    if (props.data.deadline) {
+      let arr = props.data.deadline.split("T")
+      let d = arr[0]
+      let t = arr[1].slice(0, 5)
 
-    return false
+      timeValue.value = t
+      dateValue.value = d
+    }
+  })
+
+  const urgent = computed(() => {
+    let today = new Date()
+    let formatted = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+
+    return new Date(formatted) < new Date(dateValue.value) ? false : true
   })
 
   /* actions */
 
   const handleComments = () => {
     console.log("comments")
-    console.log(timeValue.value)
-    console.log(dateValue.value)
   }
 
   const handleEditDeadline = () => {
@@ -150,6 +157,35 @@
     resetEditMode()
   }
 
+  // TODO: separate file with requests
+
+  const handleCloseDeadlineForm = async (params) => {
+    if (params?.saveDB) {
+      // update database record
+      let newDeadline = dateValue.value !== "" ? `${dateValue.value} ${timeValue.value}` : ""
+
+      let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
+        method: "PUT",
+        headers: {
+          Authorization: `HS256 ${utoken}`,
+          "Content-Type": "application/x-www-form-urlencoded"
+        },
+        body: `data[deadline]=${newDeadline}`
+      })
+
+      response = await response.json()
+
+      if (response.error) {
+        console.log(response.error)
+        return
+      }
+
+      emit("refreshTask", props.data.id)
+    }
+
+    datetimeActive.value=false
+  }
+
   const resetEditMode = () => {
     editMode.value = false
     target.value.setAttribute("contenteditable", false)
@@ -171,7 +207,10 @@
     <div class="me-2 px-2 d-flex flex-column justify-content-center">
       <span class="task-title" ref="target" contenteditable="false"
           @keydown.enter="handleEnter">{{ props.data.title }}</span>
-      <span class="form-text" :class="urgent ? 'text-danger' : 'text-success'" v-if="dateValue">{{ `${dateValue} ${timeValue}` }}</span>
+      <span v-if="dateValue" class="form-text"
+            :class="urgent ? 'text-danger' : 'text-success'">
+        {{ `${dateValue} ${timeValue}` }}
+      </span>
     </div>
     <span class="task-actions ms-auto me-2" @click="e => e.stopPropagation()">
       <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="handleComments"></i>
@@ -181,7 +220,7 @@
     </span>
 
     <DeadlineForm v-if="datetimeActive"
-      @close-deadline-form="datetimeActive=false"
+      @close-deadline-form="handleCloseDeadlineForm"
       v-model:time="timeValue"
       v-model:date="dateValue"/>
   </li>
@@ -197,7 +236,6 @@
   .project--task-item {
     border: 1px solid lightgray;
     border-bottom: none;
-    /* line-height: 3em; */
     min-height: 3em;
   }
 
