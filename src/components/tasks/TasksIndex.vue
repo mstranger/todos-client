@@ -100,7 +100,7 @@
             <button type="submit"
               class="btn btn-lg btn-success ms-4 px-4">Save</button>
             <button type="reset"
-              class="btn btn-lg px-4"
+              class="btn btn-lg px-4 hover-shadow"
               @click.prevent="handleNewTaskCancel">Cancel</button>
           </div>
 

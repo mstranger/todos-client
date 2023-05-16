@@ -125,7 +125,7 @@
 
     <div v-if="editMode" class="my-2">
       <button class="btn btn-lg btn-primary px-4" @click="handleSaveEdit">Save</button>
-      <button class="btn btn-lg" @click="handleCancelEdit">Cancel</button>
+      <button class="btn btn-lg hover-shadow" @click="handleCancelEdit">Cancel</button>
     </div>
 
     <TasksIndex v-if="!closed"

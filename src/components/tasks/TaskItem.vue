@@ -204,10 +204,10 @@
     <input type="checkbox" class="task-check ms-4 me-1"
            :checked="props.data.completed"
            @change="handleToggleCheck">
-    <div class="me-2 px-2 d-flex flex-column justify-content-center">
-      <span class="task-title" ref="target" contenteditable="false"
+    <div class="me-2 d-flex flex-column justify-content-center">
+      <span class="task-title px-2" ref="target" contenteditable="false"
           @keydown.enter="handleEnter">{{ props.data.title }}</span>
-      <span v-if="dateValue" class="form-text"
+      <span v-if="dateValue" class="form-text px-2"
             :class="urgent ? 'text-danger' : 'text-success'">
         {{ `${dateValue} ${timeValue}` }}
       </span>
@@ -227,7 +227,7 @@
   <li class="project--task-item-buttons p-3" v-if="editMode">
     <button class="btn btn-lg btn-success px-4"
             @click="handleSaveEdit">Save</button>
-    <button class="btn btn-lg"
+    <button class="btn btn-lg hover-shadow"
             @click="handleCancelEdit">Cancel</button>
   </li>
 </template>

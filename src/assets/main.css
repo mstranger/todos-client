@@ -43,3 +43,7 @@
 .invalid {
   border-color: red;
 }
+
+.hover-shadow:hover {
+  box-shadow: 2px 0px 3px lightgray;
+}

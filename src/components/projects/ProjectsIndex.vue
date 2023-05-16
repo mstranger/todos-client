@@ -135,7 +135,7 @@
         <button type="submit"
           class="btn btn-lg btn-primary">Create Project</button>
         <button type="reset"
-          class="btn btn-lg"
+          class="btn btn-lg hover-shadow"
           @click.prevent="handleCancelNewProject">Cancel</button>
       </div>
     </form>
