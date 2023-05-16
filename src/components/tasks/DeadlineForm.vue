@@ -52,7 +52,7 @@ const handleSaveDeadline = () => {
       <div class="row mt-3">
         <div class="col text-center">
           <button class="btn btn-lg btn-primary px-4" @click="handleSaveDeadline">Save</button>
-          <button class="btn btn-lg px-4" @click="$emit('closeDeadlineForm')">Cancel</button>
+          <button class="btn btn-lg px-4 hover-shadow" @click="$emit('closeDeadlineForm')">Cancel</button>
         </div>
       </div>
     </div>

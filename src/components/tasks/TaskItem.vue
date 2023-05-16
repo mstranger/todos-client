@@ -16,7 +16,7 @@
   const editMode = ref(false)
   const oldTaskTitle = ref("")
   const datetimeActive = ref(false)
-  const timeValue = ref("00:00")
+  const timeValue = ref("12:00")
   const dateValue = ref("")
 
   onMounted(() => {
@@ -75,6 +75,7 @@
     }
   }
 
+  // TODO: flash messages via storage?
 
   // TODO: think about change position
   const handleChangePriority = async (n) => {
@@ -258,11 +259,13 @@
     cursor: pointer;
   }
 
-  .task-check:checked + .task-title {
+  .task-check:checked + div > .task-title {
     text-decoration: line-through;
   }
 
   .form-text {
-    font-size: 0.75em;
+    font-size: 0.7em;
+    margin-top: 0;
+    opacity: 0.85;
   }
 </style>

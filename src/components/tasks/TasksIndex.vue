@@ -80,8 +80,8 @@
 <template>
   <div>
     <ul class="list-unstyled tasks-list mb-0">
-      <TaskItem v-for="(task, idx) in tasks"
-        :key="idx" :data="task" :projectId="props.projectId"
+      <TaskItem v-for="task in tasks"
+        :key="task.id" :data="task" :projectId="props.projectId"
         @refresh-tasks="$emit('refreshTasks', props.projectId)"
         @handle-errors="errors=$event"
         @refresh-task="refreshTask"
