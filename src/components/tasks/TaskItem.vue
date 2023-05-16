@@ -1,6 +1,7 @@
 <script setup>
   import { ref, computed, onMounted } from "vue"
   import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
+  import AddComment from "@/components/comments/AddComment.vue"
 
   const props = defineProps({
     data: {type: Object, required: true},
@@ -18,6 +19,8 @@
   const datetimeActive = ref(false)
   const timeValue = ref("12:00")
   const dateValue = ref("")
+  const openComments = ref(false)
+  const commentsCount = ref(null)
 
   onMounted(() => {
     if (props.data.deadline) {
@@ -28,6 +31,8 @@
       timeValue.value = t
       dateValue.value = d
     }
+
+    commentsCount.value = props.data.commentsCount
   })
 
   const urgent = computed(() => {
@@ -39,9 +44,9 @@
 
   /* actions */
 
-  const handleComments = () => {
-    console.log("comments")
-  }
+  // const handleComments = () => {
+  //   openComments.value = true
+  // }
 
   const handleEditDeadline = () => {
     datetimeActive.value = !datetimeActive.value
@@ -192,9 +197,19 @@
     target.value.setAttribute("contenteditable", false)
     oldTaskTitle.value = ""
   }
+
+  const sample = () => {
+    console.log(props.data)
+  }
 </script>
 
 <template>
+  <AddComment v-if="openComments"
+    :projectId="props.projectId"
+    :taskId="props.data.id"
+    @close-comments="openComments=false"
+    @change-comments-count="commentsCount += $event"/>
+
   <li class="project--task-item position-relative d-flex align-items-center">
     <span class="task-actions">
       <i class="bi bi-arrow-up-short position-absolute" style="top: 0.5em"
@@ -214,7 +229,11 @@
       </span>
     </div>
     <span class="task-actions ms-auto me-2" @click="e => e.stopPropagation()">
-      <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="handleComments"></i>
+      <span v-if="commentsCount > 0"
+          class="me-1" style="font-size: 0.85rem;" @click="sample">
+        {{ commentsCount }}
+      </span>
+      <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="openComments=true"></i>
       <i class="bi bi-clock me-3" @click="handleEditDeadline"></i>
       <i class="bi bi-pencil-fill me-3" @click="handleEditTask"></i>
       <i class="bi bi-trash" style="font-size: 1.0725em" @click="handleDeleteTask"></i>

@@ -25,7 +25,11 @@
 
     response = await response.json()
 
-    const elem = {...response.data.attributes, id: response.data.id}
+    const elem = {
+      ...response.data.attributes,
+      id: response.data.id,
+      commentsCount: response.data.relationships.comments.data.length
+    }
     const idx = props.data.findIndex(t => t.id === elem.id)
 
     // replace task with a new one
@@ -78,7 +82,7 @@
 </script>
 
 <template>
-  <div>
+  <div class="position-relative">
     <ul class="list-unstyled tasks-list mb-0">
       <TaskItem v-for="task in tasks"
         :key="task.id" :data="task" :projectId="props.projectId"

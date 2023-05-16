@@ -32,8 +32,13 @@
     })
 
     response = await response.json()
+
     tasks.value = response.data.map(t => {
-      return { ...t.data.attributes, id: t.data.id }
+      return {
+        ...t.data.attributes,
+        id: t.data.id,
+        commentsCount: t.data.relationships.comments.data.length
+      }
     })
 
     totalTaskCount.value = tasks.value.length
@@ -101,7 +106,7 @@
     <header class="project-header d-flex position-relative" @click="closed = !closed">
       <span v-if="allTasksDone"
             class="d-block position-absolute text-success"
-            style="top: -0.85em; left: 0.25em">
+            style="top: -0.70em; left: 0.15em; font-size: 1.25em;">
         <i class="bi bi-check-all"></i>
       </span>
 
@@ -150,7 +155,7 @@
     border-bottom: none;
     line-height: 3em;
     padding-left: 0.35em;
-    background-color: #cee;
+    background-color: #e1e7f3; /* #cee */
     font-weight: 500;
   }
 
