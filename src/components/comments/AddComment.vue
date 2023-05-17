@@ -12,6 +12,7 @@ const props = defineProps({
 const emit = defineEmits(["changeCommentsCount", "closeComments"])
 
 const comments = ref(null)
+const errors = ref([])
 
 // TODO: as modal window
 
@@ -36,6 +37,8 @@ const getComments = async () => {
 }
 
 const handleSubmitComment = async (e) => {
+  errors.value = []
+
   let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.taskId}/comments`, {
     method: "POST",
     headers: { Authorization: `HS256 ${utoken}` },
@@ -44,12 +47,12 @@ const handleSubmitComment = async (e) => {
 
   response = await response.json()
 
-  if (response.error) {
-    console.error(response.error)
+  if (response.errors) {
+    errors.value = response.errors
     return
   }
 
-  e.target.querySelector("#comment").value = ""
+  e.target.reset()
   emit('changeCommentsCount', 1)
   getComments()
 }
@@ -81,10 +84,23 @@ const handleDeleteComment = async (id) => {
 
     <div class="card-body">
       <form @submit.prevent="handleSubmitComment">
-        <div class="mb-3">
+        <div v-if="errors.length > 0" class="mb-2">
+          <ul class="list-unstyled text-danger text-small">
+            <li v-for="(error, idx) in errors" :key="idx">{{ error }}</li>
+          </ul>
+        </div>
+
+        <div class="mb-3 position-relative">
           <textarea name="content" id="comment"
             class="form-control"
             cols="30" rows="4"></textarea>
+          <span class="position-absolute fs-5 paperclip">
+            <i class="bi bi-paperclip"></i>
+          </span>
+        </div>
+        <div class="mb-3">
+          <label for="image">Select a file:</label>
+          <input type="file" id="image" name="image">
         </div>
         <div class="text-end">
           <button type="submit" class="btn btn-lg btn-primary px-5">Save</button>
@@ -107,7 +123,23 @@ const handleDeleteComment = async (id) => {
     z-index: 99;
   }
 
+  textarea {
+    resize: none;
+  }
+
   textarea:focus {
     box-shadow: none;
+  }
+
+  .paperclip {
+    color: dimgray;
+    bottom: 0.25rem;
+    right: 0.5rem;
+    transform: rotate(-45deg);
+  }
+
+  .paperclip:hover {
+    cursor: pointer;
+    color: firebrick;
   }
 </style>

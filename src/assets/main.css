@@ -47,3 +47,7 @@
 .hover-shadow:hover {
   box-shadow: 2px 0px 3px lightgray;
 }
+
+.text-small {
+  font-size: 0.85rem;
+}
