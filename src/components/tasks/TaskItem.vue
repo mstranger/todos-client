@@ -197,10 +197,6 @@
     target.value.setAttribute("contenteditable", false)
     oldTaskTitle.value = ""
   }
-
-  const sample = () => {
-    console.log(props.data)
-  }
 </script>
 
 <template>
@@ -230,7 +226,7 @@
     </div>
     <span class="task-actions ms-auto me-2" @click="e => e.stopPropagation()">
       <span v-if="commentsCount > 0"
-          class="me-1" style="font-size: 0.85rem;" @click="sample">
+          class="me-1" style="font-size: 0.85rem;">
         {{ commentsCount }}
       </span>
       <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="openComments=true"></i>

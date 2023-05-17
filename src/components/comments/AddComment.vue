@@ -12,6 +12,7 @@ const props = defineProps({
 const emit = defineEmits(["changeCommentsCount", "closeComments"])
 
 const comments = ref(null)
+const attachment = ref(null)
 const errors = ref([])
 
 // TODO: as modal window
@@ -45,6 +46,11 @@ const handleSubmitComment = async (e) => {
     body: new FormData(e.target)
   })
 
+  if (response.status === 500) {
+    console.error("Iternal server error")
+    return
+  }
+
   response = await response.json()
 
   if (response.errors) {
@@ -53,6 +59,7 @@ const handleSubmitComment = async (e) => {
   }
 
   e.target.reset()
+  attachment.value = null
   emit('changeCommentsCount', 1)
   getComments()
 }
@@ -94,13 +101,16 @@ const handleDeleteComment = async (id) => {
           <textarea name="content" id="comment"
             class="form-control"
             cols="30" rows="4"></textarea>
-          <span class="position-absolute fs-5 paperclip">
+          <label for="image" class="position-absolute fs-5 paperclip">
             <i class="bi bi-paperclip"></i>
-          </span>
+          </label>
         </div>
         <div class="mb-3">
-          <label for="image">Select a file:</label>
-          <input type="file" id="image" name="image">
+          <p v-if="attachment" class="text-secondary">Selected file:
+            <span class="text-body">{{ attachment }}</span>
+          </p>
+          <input type="file" id="image" name="image" class="d-none"
+            @change="attachment=$event.target.files[0].name">
         </div>
         <div class="text-end">
           <button type="submit" class="btn btn-lg btn-primary px-5">Save</button>
