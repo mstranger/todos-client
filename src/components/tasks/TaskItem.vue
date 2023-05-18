@@ -44,10 +44,6 @@
 
   /* actions */
 
-  // const handleComments = () => {
-  //   openComments.value = true
-  // }
-
   const handleEditDeadline = () => {
     datetimeActive.value = !datetimeActive.value
   }
@@ -208,12 +204,12 @@
 
   <li class="project--task-item position-relative d-flex align-items-center">
     <span class="task-actions">
-      <i class="bi bi-arrow-up-short position-absolute" style="top: 0.5em"
+      <i class="bi bi-arrow-up-short position-absolute" style="top: 0.5em; left: 0.85em"
          @click="handleChangePriority(1)"></i>
-      <i class="bi bi-arrow-down-short position-absolute" style="top: 1.5em"
+      <i class="bi bi-arrow-down-short position-absolute" style="top: 1.5em; left: 0.85em"
          @click="handleChangePriority(-1)"></i>
     </span>
-    <input type="checkbox" class="task-check ms-4 me-1"
+    <input type="checkbox" class="task-check ms-3 me-1"
            :checked="props.data.completed"
            @change="handleToggleCheck">
     <div class="me-2 d-flex flex-column justify-content-center">
@@ -260,8 +256,20 @@
     border-bottom: none;
   }
 
+  .project--task-item:hover {
+    background-color: rgb(250, 250, 250);
+  }
+
+  .project--task-item:hover > .task-actions {
+    visibility: visible;
+  }
+
   .task-check:hover {
     cursor: pointer;
+  }
+
+  .task-actions {
+    visibility: hidden;
   }
 
   .task-actions:first-child {

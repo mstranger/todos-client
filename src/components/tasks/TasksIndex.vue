@@ -49,6 +49,8 @@
     tasks.value.splice(idx, 1)
   }
 
+  // TODO: auth
+
   /* actions */
 
   const handleCreateTask = async (e) => {

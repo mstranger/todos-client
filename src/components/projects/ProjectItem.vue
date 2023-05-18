@@ -161,6 +161,15 @@
 
   .project-header:hover {
     cursor: pointer;
+    background-color: #cfd8ec;
+  }
+
+  .project-header:hover > .project-actions {
+    visibility: visible;
+  }
+
+  .project-actions {
+    visibility: hidden;
   }
 
   .bi-pencil-fill:hover,
