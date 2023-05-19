@@ -2,11 +2,10 @@
   import { ref, watch } from "vue"
   import TaskItem from "@/components/tasks/TaskItem.vue"
 
-  const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
-
   const props = defineProps({
     data: {type: Array, required: true},
-    projectId: {type: Number, required: true}
+    projectId: {type: Number, required: true},
+    utoken: {type: String, required: true}
   })
 
   const emit = defineEmits(["refreshTasks", "updateCompletedCount"])
@@ -20,7 +19,7 @@
   const refreshTask = async (taskId) => {
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${taskId}`, {
       method: "GET",
-      headers: { "Authorization": `HS256 ${utoken}` }
+      headers: { "Authorization": `HS256 ${props.utoken}` }
     })
 
     response = await response.json()
@@ -49,8 +48,6 @@
     tasks.value.splice(idx, 1)
   }
 
-  // TODO: auth
-
   /* actions */
 
   const handleCreateTask = async (e) => {
@@ -58,7 +55,7 @@
 
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks`, {
       method: "POST",
-      headers: { Authorization: `HS256 ${utoken}` },
+      headers: { Authorization: `HS256 ${props.utoken}` },
       body: new FormData(e.target)
     })
 
@@ -87,7 +84,7 @@
   <div class="position-relative">
     <ul class="list-unstyled tasks-list mb-0">
       <TaskItem v-for="task in tasks"
-        :key="task.id" :data="task" :projectId="props.projectId"
+        :key="task.id" :data="task" :projectId="props.projectId" :utoken="props.utoken"
         @refresh-tasks="$emit('refreshTasks', props.projectId)"
         @handle-errors="errors=$event"
         @refresh-task="refreshTask"

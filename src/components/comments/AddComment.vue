@@ -2,11 +2,10 @@
 import { ref, onMounted } from "vue"
 import CommentsList from "@/components/comments/CommentsList.vue"
 
-const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
-
 const props = defineProps({
   projectId: {type: Number, required: true},
-  taskId: {type: Number, required: true}
+  taskId: {type: Number, required: true},
+  utoken: {type: String, required: true}
 })
 
 const emit = defineEmits(["changeCommentsCount", "closeComments"])
@@ -23,7 +22,7 @@ const getComments = async () => {
   let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.taskId}/comments`, {
     method: "GET",
     headers: {
-      Authorization: `HS256 ${utoken}`
+      Authorization: `HS256 ${props.utoken}`
     }
   })
 
@@ -42,7 +41,7 @@ const handleSubmitComment = async (e) => {
 
   let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.taskId}/comments`, {
     method: "POST",
-    headers: { Authorization: `HS256 ${utoken}` },
+    headers: { Authorization: `HS256 ${props.utoken}` },
     body: new FormData(e.target)
   })
 
@@ -67,7 +66,7 @@ const handleSubmitComment = async (e) => {
 const handleDeleteComment = async (id) => {
   let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.taskId}/comments/${id}`, {
     method: "DELETE",
-    headers: { Authorization: `HS256 ${utoken}` }
+    headers: { Authorization: `HS256 ${props.utoken}` }
   })
 
   response = await response.json()

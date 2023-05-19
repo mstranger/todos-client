@@ -1,17 +1,18 @@
 <script setup>
-  import { ref } from "vue"
+  import { ref, onMounted } from "vue"
   import { useAuthStore } from "@/store"
   import ProjectItem from "@/components/projects/ProjectItem.vue"
   import FlashAlert from "@/components/general/FlashAlert.vue"
 
-  const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
-
   const store = useAuthStore()
+  const utoken = store.token
 
   const newProject = ref("")
   const projects = ref([])
   const errors = ref([])
   const notice = ref("")
+
+  onMounted(() => requestProjects())
 
   const requestProjects = async () => {
     let response = await fetch("http://localhost:3000/api/v1/projects", {
@@ -103,7 +104,7 @@
 <template>
   <div class="container">
     <!-- TODO: remove this -->
-    <button class="btn btn-primary" @click="requestProjects"><i class="bi bi-send"></i> send request</button>
+    <!-- <button class="btn btn-primary" @click="requestProjects"><i class="bi bi-send"></i> send request</button> -->
     <!-- end -->
 
     <h2 class="my-4">Projects</h2>
@@ -118,9 +119,14 @@
       type="warning"
       @clear-messages="handleRemoveFlash" />
 
+    <div v-if="projects.length === 0" class="mb-3 text-secondary">
+      No projects has been created yet
+    </div>
+
     <ProjectItem v-for="project in projects"
       :key="project.data.id"
       :data="project.data"
+      :utoken="utoken"
       @delete-project="handleDeleteProject"
       @handle-errors="handleErrors" />
 

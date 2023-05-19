@@ -5,13 +5,12 @@
 
   const props = defineProps({
     data: {type: Object, required: true},
-    projectId: {type: Number, required: true}
+    projectId: {type: Number, required: true},
+    utoken: {type: String, required: true}
   })
 
   // TODO: refreshTasks
   const emit = defineEmits(["refreshTasks", "deleteTask", "handleErrors", "updateCompletedCount", "refreshTask"])
-
-  const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
 
   const target = ref(null)
   const editMode = ref(false)
@@ -63,7 +62,7 @@
 
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
       method: "DELETE",
-      headers: { "Authorization": `HS256 ${utoken}` }
+      headers: { "Authorization": `HS256 ${props.utoken}` }
     })
 
     response = await response.json()
@@ -87,7 +86,7 @@
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
       method: "PUT",
       headers: {
-        Authorization: `HS256 ${utoken}`,
+        Authorization: `HS256 ${props.utoken}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: `data[priority]=${taskPriority + n}`
@@ -113,7 +112,7 @@
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
       method: "PUT",
       headers: {
-        Authorization: `HS256 ${utoken}`,
+        Authorization: `HS256 ${props.utoken}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: `data[title]=${newTaskTitle}`
@@ -134,7 +133,7 @@
   const handleToggleCheck = async (e) => {
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}/toggle`, {
       method: "POST",
-      headers: { Authorization: `HS256 ${utoken}` }
+      headers: { Authorization: `HS256 ${props.utoken}` }
     })
 
     response = await response.json()
@@ -169,7 +168,7 @@
       let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
         method: "PUT",
         headers: {
-          Authorization: `HS256 ${utoken}`,
+          Authorization: `HS256 ${props.utoken}`,
           "Content-Type": "application/x-www-form-urlencoded"
         },
         body: `data[deadline]=${newDeadline}`
@@ -199,6 +198,7 @@
   <AddComment v-if="openComments"
     :projectId="props.projectId"
     :taskId="props.data.id"
+    :utoken="props.utoken"
     @close-comments="openComments=false"
     @change-comments-count="commentsCount += $event"/>
 

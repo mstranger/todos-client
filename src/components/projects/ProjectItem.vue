@@ -4,10 +4,9 @@
 
   const emit = defineEmits(['handleErrors', 'deleteProject'])
 
-  const utoken = "eyJhbGciOiJIUzI1NiJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE2ODYzMjIzNzV9.VQ9mvBpz6jBw6Qy-DmSrYH2a09YE9iwqsutWG_ruoH4"
-
   const props = defineProps({
-    data: {type: Object, required: true}
+    data: {type: Object, required: true},
+    utoken: {type: String, required: true}
   })
 
   const tasks = ref([])
@@ -28,7 +27,7 @@
   const requestTasks = async (projectId) => {
     let response = await fetch(`http://localhost:3000/api/v1/projects/${projectId}/tasks`, {
       method: "GET",
-      headers: { Authorization: `HS256 ${utoken}` }
+      headers: { Authorization: `HS256 ${props.utoken}` }
     })
 
     response = await response.json()
@@ -64,7 +63,7 @@
     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.data.id}`, {
       method: "PUT",
       headers: {
-        Authorization: `HS256 ${utoken}`,
+        Authorization: `HS256 ${props.utoken}`,
         "Content-Type": "application/x-www-form-urlencoded"
       },
       body: `data[name]=${newProjectName}`
@@ -136,6 +135,7 @@
     <TasksIndex v-if="!closed"
       :data="tasks"
       :projectId="props.data.id"
+      :utoken="props.utoken"
       @refreshTasks="requestTasks"
       @update-completed-count="updateCompletedTaskCount" />
   </div>
