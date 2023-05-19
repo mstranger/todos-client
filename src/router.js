@@ -32,7 +32,7 @@ const router = createRouter({
   ]
 })
 
-// TODO:272 episode, timing - 0:44
+// TODO:271 episode, timing - 10:15
 
 // router.beforeEach(to => {
 //   const restricted = ["/projects"]

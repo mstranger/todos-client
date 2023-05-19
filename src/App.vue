@@ -2,13 +2,7 @@
   import NavBar from "@/components/general/NavBar.vue"
   import { useAuthStore } from "@/store"
 
-  // try {
-  //   console.log("login part")
-  //   useAuthStore().tryLogin()
-  // } catch (err) {
-  //   console.log("here: ")
-  //   console.log(err.message)
-  // }
+  // TODO: try invalid token errors handler
 
   useAuthStore().tryLogin()
 </script>

@@ -37,8 +37,6 @@
       passwordField.classList.add("invalid")
       error.value = data.error
     } else {
-      localStorage.setItem("token", data.token)
-
       store.login(data.token)
       router.push({ name: "root" })
     }
