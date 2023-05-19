@@ -10,14 +10,34 @@ export const useAuthStore = defineStore("auth", {
     isAuthenticated: state => !!state.userToken
   },
 
+  // TODO: localStorage.setItem here?
+
   actions: {
     login(token) {
       this.userToken = token
       this.userEmail = jwt_decode(token).email
     },
 
+    // auto-login
+    tryLogin() {
+      const token = localStorage.getItem("token")
+
+      if (token) {
+        const expireIn = jwt_decode(token).exp * 1000
+
+        // session expired
+        if (expireIn - new Date().getTime() < 0) {
+          localStorage.removeItem("token")
+          return
+        }
+
+        this.login(token)
+      }
+    },
+
     logout() {
       this.userToken = null
+      this.userEmail = null
     }
   }
 })

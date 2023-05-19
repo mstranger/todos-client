@@ -24,8 +24,15 @@ const router = createRouter({
       name: "signin",
       component: SignIn
     }
+    // {
+    //   path: "/:catchAll(.*)",
+    //   name: "Not Found",
+    //   component: NotFoundPage
+    // }
   ]
 })
+
+// TODO:272 episode, timing - 0:44
 
 // router.beforeEach(to => {
 //   const restricted = ["/projects"]

@@ -20,11 +20,25 @@
 
     const data = await response.json()
 
+    // TODO: auth here
+
+    // if (!response.ok) {
+    //   console.log(data)
+
+    //   const error = new Error(
+    //     data.message || "Failed to authenticate. Check your login data"
+    //   )
+
+    //   throw error
+    // }
+
     if (data.error) {
       emailField.classList.add("invalid")
       passwordField.classList.add("invalid")
       error.value = data.error
     } else {
+      localStorage.setItem("token", data.token)
+
       store.login(data.token)
       router.push({ name: "root" })
     }
