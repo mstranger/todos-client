@@ -4,6 +4,9 @@ import { createRouter, createWebHistory } from "vue-router"
 import SignUp from "@/components/auth/SignUp.vue"
 import SignIn from "@/components/auth/SignIn.vue"
 import RootView from "@/views/general/RootView.vue"
+import NotFoundView from "@/views/general/NotFoundView.vue"
+
+// TODO: lazy loading
 
 const router = createRouter({
   history: createWebHistory(),
@@ -23,12 +26,12 @@ const router = createRouter({
       path: "/auth/signin",
       name: "signin",
       component: SignIn
+    },
+    {
+      path: "/:catchAll(.*)",
+      name: "notFound",
+      component: NotFoundView
     }
-    // {
-    //   path: "/:catchAll(.*)",
-    //   name: "Not Found",
-    //   component: NotFoundPage
-    // }
   ]
 })
 
