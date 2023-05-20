@@ -5,8 +5,6 @@
   const logout = () => {
     const answer = confirm("You are going to logout. Continue?")
     if (!answer) return
-
-    localStorage.removeItem("token")
     store.logout()
   }
 </script>

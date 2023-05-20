@@ -103,7 +103,7 @@
 <template>
   <div class="project">
     <header class="project-header d-flex position-relative" @click="closed = !closed">
-      <span v-if="allTasksDone"
+      <span v-if="tasks.length > 0 && allTasksDone"
             class="d-block position-absolute text-success"
             style="top: -0.70em; left: 0.15em; font-size: 1.25em;">
         <i class="bi bi-check-all"></i>

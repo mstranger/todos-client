@@ -103,10 +103,6 @@
 
 <template>
   <div class="container">
-    <!-- TODO: remove this -->
-    <!-- <button class="btn btn-primary" @click="requestProjects"><i class="bi bi-send"></i> send request</button> -->
-    <!-- end -->
-
     <h2 class="my-4">Projects</h2>
 
     <FlashAlert v-for="(msg, idx) in errors"

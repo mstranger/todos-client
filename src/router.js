@@ -1,12 +1,10 @@
 import { createRouter, createWebHistory } from "vue-router"
-// import { useAuthStore } from "@/store"
+import { useAuthStore } from "@/store"
 
-import SignUp from "@/components/auth/SignUp.vue"
-import SignIn from "@/components/auth/SignIn.vue"
-import RootView from "@/views/general/RootView.vue"
-import NotFoundView from "@/views/general/NotFoundView.vue"
-
-// TODO: lazy loading
+const SignUp = () => import("@/components/auth/SignUp.vue")
+const SignIn = () => import("@/components/auth/SignIn.vue")
+const ProjectsIndex = () => import("@/components/projects/ProjectsIndex.vue")
+const NotFoundView = () => import("@/views/general/NotFoundView.vue")
 
 const router = createRouter({
   history: createWebHistory(),
@@ -14,18 +12,25 @@ const router = createRouter({
     {
       path: "/",
       name: "root",
-      component: RootView,
-      alias: "/projects"
+      redirect: "/projects"
+    },
+    {
+      path: "/projects",
+      name: "projects",
+      component: ProjectsIndex,
+      meta: { requireAuth: true }
     },
     {
       path: "/auth/signup",
       name: "signup",
-      component: SignUp
+      component: SignUp,
+      meta: { requireUnauth: true }
     },
     {
       path: "/auth/signin",
       name: "signin",
-      component: SignIn
+      component: SignIn,
+      meta: { requireUnauth: true }
     },
     {
       path: "/:catchAll(.*)",
@@ -35,19 +40,16 @@ const router = createRouter({
   ]
 })
 
-// TODO:271 episode, timing - 10:15
+router.beforeEach((to, _from, next) => {
+  const store = useAuthStore()
 
-// router.beforeEach(to => {
-//   const restricted = ["/projects"]
-//   const authRequired = restricted.includes(to.path)
-//   const store = useAuthStore()
-
-//   if (authRequired && !store.isAuthenticted) {
-//     router.push({
-//       name: "root",
-//       query: { redirect: to.path }
-//     })
-//   }
-// })
+  if (to.meta.requireAuth && !store.isAuthenticated) {
+    next("/auth/signin")
+  } else if (to.meta.requireUnauth && store.isAuthenticated) {
+    next("/")
+  } else {
+    next()
+  }
+})
 
 export default router
