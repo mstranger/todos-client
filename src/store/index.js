@@ -13,9 +13,9 @@ export const useAuthStore = defineStore("auth", {
   },
 
   getters: {
-    token: state => state.userToken,
-    email: state => state.userEmail,
-    isAuthenticated: state => !!state.userToken
+    token: (state) => state.userToken,
+    email: (state) => state.userEmail,
+    isAuthenticated: (state) => !!state.userToken
   },
 
   actions: {
@@ -46,7 +46,6 @@ export const useAuthStore = defineStore("auth", {
       if (token) {
         const expireIn = jwt_decode(token).exp * 1000
 
-        // session expired
         if (expireIn - new Date().getTime() < 0) this.logout()
         else this.login(token)
       }
