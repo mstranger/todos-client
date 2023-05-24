@@ -1,5 +1,5 @@
 <script setup>
-defineProps({comments: Array})
+defineProps({ comments: Array })
 </script>
 
 <template>
@@ -15,25 +15,28 @@ defineProps({comments: Array})
       </div>
       <div>
         <p class="mb-0">{{ comment.data.attributes.content }}</p>
-        <img v-if="comment.data.attributes.image"
+        <img
+          v-if="comment.data.attributes.image"
           class="mt-2 img-fluid"
-          style="max-height: 20rem;"
-          :src="comment.data.attributes.image" alt="attached image">
+          style="max-height: 20rem"
+          :src="comment.data.attributes.image"
+          alt="attached image"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <style scoped>
-  .comments-list {
-    border-top: 1px solid lightgray;
-  }
+.comments-list {
+  border-top: 1px solid lightgray;
+}
 
-  .comment-delete {
-    cursor: pointer;
-  }
+.comment-delete {
+  cursor: pointer;
+}
 
-  .comment-delete:hover {
-    color: firebrick;
-  }
+.comment-delete:hover {
+  color: firebrick;
+}
 </style>

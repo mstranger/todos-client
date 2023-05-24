@@ -1,11 +1,12 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import CommentsList from "@/components/comments/CommentsList.vue"
+import { requestComments, createComment, deleteComment } from "@/rest/commentActions"
 
 const props = defineProps({
-  projectId: {type: Number, required: true},
-  taskId: {type: Number, required: true},
-  utoken: {type: String, required: true}
+  projectId: { type: Number, required: true },
+  taskId: { type: Number, required: true },
+  utoken: { type: String, required: true }
 })
 
 const emit = defineEmits(["changeCommentsCount", "closeComments"])
@@ -19,64 +20,33 @@ const errors = ref([])
 onMounted(() => getComments())
 
 const getComments = async () => {
-  let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.taskId}/comments`, {
-    method: "GET",
-    headers: {
-      Authorization: `HS256 ${props.utoken}`
-    }
-  })
+  const result = await requestComments({ ...props })
 
-  response = await response.json()
+  if (!result) return
 
-  if (response.error) {
-    console.log(response.error)
-    return
-  }
-
-  comments.value = response.data
+  comments.value = result
 }
 
 const handleSubmitComment = async (e) => {
   errors.value = []
 
-  let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.taskId}/comments`, {
-    method: "POST",
-    headers: { Authorization: `HS256 ${props.utoken}` },
-    body: new FormData(e.target)
-  })
+  const data = new FormData(e.target)
+  const ok = await createComment({ ...props, data, errors })
 
-  if (response.status === 500) {
-    console.error("Iternal server error")
-    return
-  }
-
-  response = await response.json()
-
-  if (response.errors) {
-    errors.value = response.errors
-    return
-  }
+  if (!ok) return
 
   e.target.reset()
   attachment.value = null
-  emit('changeCommentsCount', 1)
+  emit("changeCommentsCount", 1)
   getComments()
 }
 
 const handleDeleteComment = async (id) => {
-  let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.taskId}/comments/${id}`, {
-    method: "DELETE",
-    headers: { Authorization: `HS256 ${props.utoken}` }
-  })
+  const ok = await deleteComment({ ...props, commentId: id })
 
-  response = await response.json()
+  if (!ok) return
 
-  if (response.error) {
-    console.error(response.error)
-    return
-  }
-
-  emit('changeCommentsCount', -1)
+  emit("changeCommentsCount", -1)
   getComments()
 }
 </script>
@@ -97,58 +67,67 @@ const handleDeleteComment = async (id) => {
         </div>
 
         <div class="mb-3 position-relative">
-          <textarea name="content" id="comment"
-            class="form-control"
-            cols="30" rows="4"></textarea>
+          <textarea name="content" id="comment" class="form-control" cols="30" rows="4"></textarea>
           <label for="image" class="position-absolute fs-5 paperclip">
             <i class="bi bi-paperclip"></i>
           </label>
         </div>
         <div class="mb-3">
-          <p v-if="attachment" class="text-secondary">Selected file:
+          <p v-if="attachment" class="text-secondary">
+            Selected file:
             <span class="text-body">{{ attachment }}</span>
           </p>
-          <input type="file" id="image" name="image" class="d-none"
-            @change="attachment=$event.target.files[0].name">
+          <input
+            type="file"
+            id="image"
+            name="image"
+            class="d-none"
+            @change="attachment = $event.target.files[0].name"
+          />
         </div>
         <div class="text-end">
           <button type="submit" class="btn btn-lg btn-primary px-5">Save</button>
-          <button class="btn btn-lg hover-shadow px-5" @click="$emit('closeComments')">Cancel</button>
+          <button class="btn btn-lg hover-shadow px-5" @click="$emit('closeComments')">
+            Cancel
+          </button>
         </div>
       </form>
     </div>
 
-    <CommentsList v-if="comments?.length > 0" :comments="comments"
-      @delete-comment="handleDeleteComment"/>
+    <CommentsList
+      v-if="comments?.length > 0"
+      :comments="comments"
+      @delete-comment="handleDeleteComment"
+    />
   </div>
 </template>
 
 <style scoped>
-  .card {
-    position: absolute;
-    top: -10%;
-    left: 20%;
-    width: 50vw;
-    z-index: 99;
-  }
+.card {
+  position: absolute;
+  top: -10%;
+  left: 20%;
+  width: 50vw;
+  z-index: 99;
+}
 
-  textarea {
-    resize: none;
-  }
+textarea {
+  resize: none;
+}
 
-  textarea:focus {
-    box-shadow: none;
-  }
+textarea:focus {
+  box-shadow: none;
+}
 
-  .paperclip {
-    color: dimgray;
-    bottom: 0.25rem;
-    right: 0.5rem;
-    transform: rotate(-45deg);
-  }
+.paperclip {
+  color: dimgray;
+  bottom: 0.25rem;
+  right: 0.5rem;
+  transform: rotate(-45deg);
+}
 
-  .paperclip:hover {
-    cursor: pointer;
-    color: firebrick;
-  }
+.paperclip:hover {
+  cursor: pointer;
+  color: firebrick;
+}
 </style>
