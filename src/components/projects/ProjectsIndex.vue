@@ -9,11 +9,16 @@ import { requestProjects, createProject, editProject, deleteProject } from "@/re
 const store = useAuthStore()
 const utoken = store.token
 
+// const projects = ref([])
 const newProjectName = ref("")
 const errors = ref([])
 const notice = ref("")
 
 const projects = requestProjects(utoken)
+
+// onMounted(async () => {
+//   projects.value = await requestProjects(utoken)
+// })
 
 /* actions */
 
@@ -72,14 +77,14 @@ const handleErrors = (messages) => {
   <div class="container">
     <h2 class="my-4">Projects</h2>
 
-    <FlashAlert
+    <flash-alert
       v-for="(msg, idx) in errors"
       :key="idx"
       :message="msg"
       type="danger"
       @clear-messages="handleRemoveFlash"
     />
-    <FlashAlert
+    <flash-alert
       v-if="notice"
       :message="notice"
       type="warning"
@@ -90,7 +95,7 @@ const handleErrors = (messages) => {
       No projects has been created yet
     </div>
 
-    <ProjectItem
+    <project-item
       v-for="project in projects"
       :key="project.data.id"
       :data="project.data"

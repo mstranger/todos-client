@@ -14,6 +14,8 @@ const handleSignUp = async (e) => {
   required.value = ""
   errors.value = []
 
+  // TODO: urls
+
   try {
     const response = await fetch("http://localhost:3000/auth/signup", {
       method: "POST",

@@ -15,7 +15,7 @@ onMounted(() => {
 const handleSaveDeadline = () => {
   emit("update:date", dateField.value)
   emit("update:time", timeField.value)
-  emit("closeDeadlineForm", {saveDB: true})
+  emit("closeDeadlineForm", { saveDB: true })
 }
 </script>
 
@@ -36,23 +36,33 @@ const handleSaveDeadline = () => {
       </div>
       <div class="row">
         <div class="col col-6">
-          <input type="date" id="date"
+          <input
+            type="date"
+            id="date"
             class="form-controll w-100"
             :value="date"
-            @change="dateField=$event.target.value">
+            @change="dateField = $event.target.value"
+          />
         </div>
+
         <div class="col col-6">
-          <input type="time" id="time"
+          <input
+            type="time"
+            id="time"
             class="form-controll w-100"
-            min="00:00" max="23:59"
+            min="00:00"
+            max="23:59"
             :value="time"
-            @change="timeField=$event.target.value">
+            @change="timeField = $event.target.value"
+          />
         </div>
       </div>
       <div class="row mt-3">
         <div class="col text-center">
           <button class="btn btn-lg btn-primary px-4" @click="handleSaveDeadline">Save</button>
-          <button class="btn btn-lg px-4 hover-shadow" @click="$emit('closeDeadlineForm')">Cancel</button>
+          <button class="btn btn-lg px-4 hover-shadow" @click="$emit('closeDeadlineForm')">
+            Cancel
+          </button>
         </div>
       </div>
     </div>
@@ -60,11 +70,11 @@ const handleSaveDeadline = () => {
 </template>
 
 <style scoped>
-  .card {
-    width: 22rem;
-    right: 0.5rem;
-    top: 1rem;
-    z-index: 99;
-    box-shadow: 1px 1px 2px lightgray;
-  }
+.card {
+  width: 22rem;
+  right: 0.5rem;
+  top: 1rem;
+  z-index: 99;
+  box-shadow: 1px 1px 2px lightgray;
+}
 </style>

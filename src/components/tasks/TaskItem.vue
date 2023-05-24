@@ -1,294 +1,294 @@
 <script setup>
-  import { ref, computed, onMounted } from "vue"
-  import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
-  import AddComment from "@/components/comments/AddComment.vue"
+import { ref, computed, onMounted } from "vue"
+import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
+import AddComment from "@/components/comments/AddComment.vue"
+import { updateTask, toggleDone, deleteTask } from "@/rest/taskActions"
 
-  const props = defineProps({
-    data: {type: Object, required: true},
-    projectId: {type: Number, required: true},
-    utoken: {type: String, required: true}
+const props = defineProps({
+  data: { type: Object, required: true },
+  projectId: { type: Number, required: true },
+  utoken: { type: String, required: true }
+})
+
+// TODO: refreshTasks
+const emit = defineEmits([
+  "refreshTasks",
+  "deleteTask",
+  "handleErrors",
+  "updateCompletedCount",
+  "refreshTask"
+])
+
+const target = ref(null)
+const editMode = ref(false)
+const oldTaskTitle = ref("")
+const datetimeActive = ref(false)
+const timeValue = ref("12:00")
+const dateValue = ref("")
+const openComments = ref(false)
+const commentsCount = ref(null)
+
+onMounted(() => {
+  if (props.data.deadline) {
+    const datetime = props.data.deadline.split("T")
+    let date = datetime[0]
+    let time = datetime[1].slice(0, 5)
+
+    timeValue.value = time
+    dateValue.value = date
+  }
+
+  commentsCount.value = props.data.commentsCount
+})
+
+const urgent = computed(() => {
+  let today = new Date()
+  let formatted = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+
+  return new Date(formatted) < new Date(dateValue.value) ? false : true
+})
+
+/* actions */
+
+const handleEditDeadline = () => {
+  datetimeActive.value = !datetimeActive.value
+}
+
+const handleEditTask = () => {
+  const elem = target.value
+  editMode.value = true
+  oldTaskTitle.value = elem.innerText.trim()
+  elem.setAttribute("contenteditable", true)
+  elem.focus()
+}
+
+const handleDeleteTask = async () => {
+  // TODO: confirmation via vue component
+  const yes = confirm("Are you sure you want to delete this task?")
+  if (!yes) return
+
+  const ok = await deleteTask({
+    projectId: props.projectId,
+    taskId: props.data.id,
+    utoken: props.utoken
   })
 
-  // TODO: refreshTasks
-  const emit = defineEmits(["refreshTasks", "deleteTask", "handleErrors", "updateCompletedCount", "refreshTask"])
+  // TODO: here delete from parent data props
+  if (ok) emit("deleteTask", props.data.id)
+}
 
-  const target = ref(null)
-  const editMode = ref(false)
-  const oldTaskTitle = ref("")
-  const datetimeActive = ref(false)
-  const timeValue = ref("12:00")
-  const dateValue = ref("")
-  const openComments = ref(false)
-  const commentsCount = ref(null)
+// TODO: flash messages via storage?
 
-  onMounted(() => {
-    if (props.data.deadline) {
-      let arr = props.data.deadline.split("T")
-      let d = arr[0]
-      let t = arr[1].slice(0, 5)
+// TODO: think about change position
+// FIX: doesn't work properly
+const handleChangePriority = async (n) => {
+  let taskPriority = props.data.priority
 
-      timeValue.value = t
-      dateValue.value = d
-    }
+  if (taskPriority === 0 && n === -1) return
 
-    commentsCount.value = props.data.commentsCount
+  const data = `data[priority]=${taskPriority + n}`
+
+  let errors = await updateTask({
+    data,
+    projectId: props.projectId,
+    taskId: props.data.id,
+    utoken: props.utoken
   })
 
-  const urgent = computed(() => {
-    let today = new Date()
-    let formatted = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
+  if (errors) return
 
-    return new Date(formatted) < new Date(dateValue.value) ? false : true
+  emit("refreshTask", props.data.id)
+}
+
+const handleSaveEdit = async () => {
+  emit("handleErrors", [])
+
+  const data = `data[title]=${target.value.innerText.trim()}`
+
+  let errors = await updateTask({
+    data,
+    projectId: props.projectId,
+    taskId: props.data.id,
+    utoken: props.utoken
   })
 
-  /* actions */
-
-  const handleEditDeadline = () => {
-    datetimeActive.value = !datetimeActive.value
-  }
-
-  const handleEditTask = () => {
-    const elem = target.value
-    editMode.value = true
-    oldTaskTitle.value = elem.innerText.trim()
-    elem.setAttribute("contenteditable", true)
-    elem.focus()
-  }
-
-  const handleDeleteTask = async () => {
-    // TODO: confirmation via vue component
-    const yes = confirm("Are you sure you want to delete this task?")
-    if (!yes) return
-
-    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
-      method: "DELETE",
-      headers: { "Authorization": `HS256 ${props.utoken}` }
-    })
-
-    response = await response.json()
-
-    if (response.error) {
-      console.error(response.error)
-    } else {
-      // TODO: here delete from parent data props
-      emit("deleteTask", props.data.id)
-    }
-  }
-
-  // TODO: flash messages via storage?
-
-  // TODO: think about change position
-  const handleChangePriority = async (n) => {
-    let taskPriority = props.data.priority
-
-    if (taskPriority === 0 && n === -1) return
-
-    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `HS256 ${props.utoken}`,
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: `data[priority]=${taskPriority + n}`
-    })
-
-    response = await response.json()
-
-    if (response.error) {
-      console.log(response.error)
-      return
-    }
-
-    emit("refreshTask", props.data.id)
-  }
-
-  // TODO: move the url path to other file
-
-  const handleSaveEdit = async () => {
-    const newTaskTitle = target.value.innerText.trim()
-
-    emit("handleErrors", [])
-
-    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
-      method: "PUT",
-      headers: {
-        Authorization: `HS256 ${props.utoken}`,
-        "Content-Type": "application/x-www-form-urlencoded"
-      },
-      body: `data[title]=${newTaskTitle}`
-    })
-
-    response = await response.json()
-
-    if (response.errors) {
-      emit("handleErrors", response.errors)
-      target.value.focus()
-      return
-    }
-
+  if (errors) {
+    emit("handleErrors", errors)
+    target.value.focus()
+  } else {
     emit("refreshTask", props.data.id)
     resetEditMode()
   }
+}
 
-  const handleToggleCheck = async (e) => {
-    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}/toggle`, {
-      method: "POST",
-      headers: { Authorization: `HS256 ${props.utoken}` }
+const handleToggleCheck = async (e) => {
+  let ok = await toggleDone({
+    projectId: props.projectId,
+    taskId: props.data.id,
+    utoken: props.utoken
+  })
+
+  if (!ok) return
+
+  emit("updateCompletedCount", e.target.checked === true ? 1 : -1)
+  emit("refreshTask", props.data.id)
+}
+
+const handleEnter = (e) => {
+  e.preventDefault()
+  handleSaveEdit()
+}
+
+const handleCancelEdit = () => {
+  target.value.innerText = oldTaskTitle.value
+  emit("handleErrors", [])
+  resetEditMode()
+}
+
+// TODO: separate file with requests
+
+const handleCloseDeadlineForm = async (params) => {
+  if (params?.saveDB) {
+    // update database record
+    let newDeadline = dateValue.value !== "" ? `${dateValue.value} ${timeValue.value}` : ""
+
+    const data = `data[deadline]=${newDeadline}`
+
+    let errors = updateTask({
+      data,
+      projectId: props.projectId,
+      taskId: props.data.id,
+      utoken: props.utoken
     })
 
-    response = await response.json()
+    if (errors) return
 
-    if (response.error) {
-      console.error(response.error)
-      return
-    }
-
-    emit("updateCompletedCount", e.target.checked === true ? 1 : -1)
     emit("refreshTask", props.data.id)
   }
 
-  const handleEnter = (e) => {
-    e.preventDefault()
-    handleSaveEdit()
-  }
+  datetimeActive.value = false
+}
 
-  const handleCancelEdit = () => {
-    target.value.innerText = oldTaskTitle.value
-    emit("handleErrors", [])
-    resetEditMode()
-  }
-
-  // TODO: separate file with requests
-
-  const handleCloseDeadlineForm = async (params) => {
-    if (params?.saveDB) {
-      // update database record
-      let newDeadline = dateValue.value !== "" ? `${dateValue.value} ${timeValue.value}` : ""
-
-      let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${props.data.id}`, {
-        method: "PUT",
-        headers: {
-          Authorization: `HS256 ${props.utoken}`,
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `data[deadline]=${newDeadline}`
-      })
-
-      response = await response.json()
-
-      if (response.error) {
-        console.log(response.error)
-        return
-      }
-
-      emit("refreshTask", props.data.id)
-    }
-
-    datetimeActive.value=false
-  }
-
-  const resetEditMode = () => {
-    editMode.value = false
-    target.value.setAttribute("contenteditable", false)
-    oldTaskTitle.value = ""
-  }
+const resetEditMode = () => {
+  editMode.value = false
+  target.value.setAttribute("contenteditable", false)
+  oldTaskTitle.value = ""
+}
 </script>
 
 <template>
-  <AddComment v-if="openComments"
+  <add-comment
+    v-if="openComments"
     :projectId="props.projectId"
     :taskId="props.data.id"
     :utoken="props.utoken"
-    @close-comments="openComments=false"
-    @change-comments-count="commentsCount += $event"/>
+    @close-comments="openComments = false"
+    @change-comments-count="commentsCount += $event"
+  />
 
   <li class="project--task-item position-relative d-flex align-items-center">
     <span class="task-actions">
-      <i class="bi bi-arrow-up-short position-absolute" style="top: 0.5em; left: 0.85em"
-         @click="handleChangePriority(1)"></i>
-      <i class="bi bi-arrow-down-short position-absolute" style="top: 1.5em; left: 0.85em"
-         @click="handleChangePriority(-1)"></i>
+      <i
+        class="bi bi-arrow-up-short position-absolute"
+        style="top: 0.5em; left: 0.85em"
+        @click="handleChangePriority(1)"
+      ></i>
+      <i
+        class="bi bi-arrow-down-short position-absolute"
+        style="top: 1.5em; left: 0.85em"
+        @click="handleChangePriority(-1)"
+      ></i>
     </span>
-    <input type="checkbox" class="task-check ms-3 me-1"
-           :checked="props.data.completed"
-           @change="handleToggleCheck">
+    <input
+      type="checkbox"
+      class="task-check ms-3 me-1"
+      :checked="props.data.completed"
+      @change="handleToggleCheck"
+    />
     <div class="me-2 d-flex flex-column justify-content-center">
-      <span class="task-title px-2" ref="target" contenteditable="false"
-          @keydown.enter="handleEnter">{{ props.data.title }}</span>
-      <span v-if="dateValue" class="form-text px-2"
-            :class="urgent ? 'text-danger' : 'text-success'">
+      <span
+        class="task-title px-2"
+        ref="target"
+        contenteditable="false"
+        @keydown.enter="handleEnter"
+        >{{ props.data.title }}</span
+      >
+      <span
+        v-if="dateValue"
+        class="form-text px-2"
+        :class="urgent ? 'text-danger' : 'text-success'"
+      >
         {{ `${dateValue} ${timeValue}` }}
       </span>
     </div>
-    <span class="task-actions ms-auto me-2" @click="e => e.stopPropagation()">
-      <span v-if="commentsCount > 0"
-          class="me-1" style="font-size: 0.85rem;">
+    <span class="task-actions ms-auto me-2" @click="(e) => e.stopPropagation()">
+      <span v-if="commentsCount > 0" class="me-1" style="font-size: 0.85rem">
         {{ commentsCount }}
       </span>
-      <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="openComments=true"></i>
+      <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="openComments = true"></i>
       <i class="bi bi-clock me-3" @click="handleEditDeadline"></i>
       <i class="bi bi-pencil-fill me-3" @click="handleEditTask"></i>
       <i class="bi bi-trash" style="font-size: 1.0725em" @click="handleDeleteTask"></i>
     </span>
 
-    <DeadlineForm v-if="datetimeActive"
+    <deadline-form
+      v-if="datetimeActive"
       @close-deadline-form="handleCloseDeadlineForm"
       v-model:time="timeValue"
-      v-model:date="dateValue"/>
+      v-model:date="dateValue"
+    />
   </li>
   <li class="project--task-item-buttons p-3" v-if="editMode">
-    <button class="btn btn-lg btn-success px-4"
-            @click="handleSaveEdit">Save</button>
-    <button class="btn btn-lg hover-shadow"
-            @click="handleCancelEdit">Cancel</button>
+    <button class="btn btn-lg btn-success px-4" @click="handleSaveEdit">Save</button>
+    <button class="btn btn-lg hover-shadow" @click="handleCancelEdit">Cancel</button>
   </li>
 </template>
 
 <style scoped>
-  .project--task-item {
-    border: 1px solid lightgray;
-    border-bottom: none;
-    min-height: 3em;
-  }
+.project--task-item {
+  border: 1px solid lightgray;
+  border-bottom: none;
+  min-height: 3em;
+}
 
-  .project--task-item-buttons {
-    border: 1px solid lightgray;
-    border-bottom: none;
-  }
+.project--task-item-buttons {
+  border: 1px solid lightgray;
+  border-bottom: none;
+}
 
-  .project--task-item:hover {
-    background-color: rgb(250, 250, 250);
-  }
+.project--task-item:hover {
+  background-color: rgb(250, 250, 250);
+}
 
-  .project--task-item:hover > .task-actions {
-    visibility: visible;
-  }
+.project--task-item:hover > .task-actions {
+  visibility: visible;
+}
 
-  .task-check:hover {
-    cursor: pointer;
-  }
+.task-check:hover {
+  cursor: pointer;
+}
 
-  .task-actions {
-    visibility: hidden;
-  }
+.task-actions {
+  visibility: hidden;
+}
 
-  .task-actions:first-child {
-    margin-left: 1.25em;
-    line-height: 1em;
-  }
+.task-actions:first-child {
+  margin-left: 1.25em;
+  line-height: 1em;
+}
 
-  .task-actions .bi:hover {
-    color: firebrick;
-    cursor: pointer;
-  }
+.task-actions .bi:hover {
+  color: firebrick;
+  cursor: pointer;
+}
 
-  .task-check:checked + div > .task-title {
-    text-decoration: line-through;
-  }
+.task-check:checked + div > .task-title {
+  text-decoration: line-through;
+}
 
-  .form-text {
-    font-size: 0.7em;
-    margin-top: 0;
-    opacity: 0.85;
-  }
+.form-text {
+  font-size: 0.7em;
+  margin-top: 0;
+  opacity: 0.85;
+}
 </style>

@@ -1,23 +1,28 @@
 <script setup>
-  import { ref, watch } from "vue"
-  import TaskItem from "@/components/tasks/TaskItem.vue"
+import { ref, watch } from "vue"
+import TaskItem from "@/components/tasks/TaskItem.vue"
+import { createTask } from "@/rest/taskActions"
 
-  const props = defineProps({
-    data: {type: Array, required: true},
-    projectId: {type: Number, required: true},
-    utoken: {type: String, required: true}
-  })
+const props = defineProps({
+  data: { type: Array, required: true },
+  projectId: { type: Number, required: true },
+  utoken: { type: String, required: true }
+})
 
-  const emit = defineEmits(["refreshTasks", "updateCompletedCount"])
+const emit = defineEmits(["refreshTasks", "updateCompletedCount"])
 
-  const tasks = ref(props.data)
-  const newTask = ref("")
-  const errors = ref([])
+const tasks = ref(props.data)
+const newTask = ref("")
+const errors = ref([])
 
-  watch(() => props.data, () => tasks.value = props.data)
+watch(
+  () => props.data,
+  () => (tasks.value = props.data)
+)
 
-  const refreshTask = async (taskId) => {
-    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${taskId}`, {
+const refreshTask = async (taskId) => {
+  console.log("should be refresh task", taskId)
+  /*     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${taskId}`, {
       method: "GET",
       headers: { "Authorization": `HS256 ${props.utoken}` }
     })
@@ -40,100 +45,102 @@
         return new Date(t1.created_at) - new Date(t2.created_at)
 
       return t2.priority - t1.priority
-    })
-  }
+    }) */
+}
 
-  const deleteTask = (taskId) => {
-    const idx = props.data.findIndex(t => t.id === taskId)
-    tasks.value.splice(idx, 1)
-  }
+const deleteTask = (taskId) => {
+  const idx = props.data.findIndex((t) => t.id === taskId)
+  tasks.value.splice(idx, 1)
+}
 
-  /* actions */
+/* actions */
 
-  const handleCreateTask = async (e) => {
-    clearErrors()
+const handleCreateTask = async (e) => {
+  errors.value = []
+  const data = new FormData(e.target)
 
-    let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks`, {
-      method: "POST",
-      headers: { Authorization: `HS256 ${props.utoken}` },
-      body: new FormData(e.target)
-    })
+  await createTask({ data, errors, projectId: props.projectId, utoken: props.utoken })
+  emit("refreshTasks")
+  newTask.value = ""
+}
 
-    response = await response.json()
+const handleNewTaskCancel = () => {
+  newTask.value = ""
+  errors.value = []
+}
 
-    if (response.errors) {
-      errors.value = response.errors
-      return
-    }
-
-    emit("refreshTasks", props.projectId)
-    newTask.value = ""
-  }
-
-  const handleNewTaskCancel = () => {
-    newTask.value = ""
-    clearErrors()
-  }
-
-  const clearErrors = () => {
-    errors.value = []
-  }
+// const clearErrors = () => {
+//   errors.value = []
+// }
 </script>
 
 <template>
   <div class="position-relative">
     <ul class="list-unstyled tasks-list mb-0">
-      <TaskItem v-for="task in tasks"
-        :key="task.id" :data="task" :projectId="props.projectId" :utoken="props.utoken"
+      <task-item
+        v-for="task in tasks"
+        :key="task.id"
+        :data="task"
+        :projectId="props.projectId"
+        :utoken="props.utoken"
         @refresh-tasks="$emit('refreshTasks', props.projectId)"
-        @handle-errors="errors=$event"
+        @handle-errors="errors = $event"
         @refresh-task="refreshTask"
         @delete-task="deleteTask"
-        @update-completed-count="$emit('updateCompletedCount', $event)"/>
+        @update-completed-count="$emit('updateCompletedCount', $event)"
+      />
 
       <li>
         <form @submit.prevent="handleCreateTask">
-          <input type="text"
+          <input
+            type="text"
             name="data[title]"
             class="form-control new-task ps-4"
             placeholder="Enter Task name ..."
-            v-model="newTask" >
+            v-model="newTask"
+          />
 
           <div class="py-2 new-task-buttons" v-if="newTask">
-            <button type="submit"
-              class="btn btn-lg btn-success ms-4 px-4">Save</button>
-            <button type="reset"
+            <button type="submit" class="btn btn-lg btn-success ms-4 px-4">Save</button>
+            <button
+              type="reset"
               class="btn btn-lg px-4 hover-shadow"
-              @click.prevent="handleNewTaskCancel">Cancel</button>
+              @click.prevent="handleNewTaskCancel"
+            >
+              Cancel
+            </button>
           </div>
 
-          <span v-for="(msg, idx) in errors" :key="idx"
-            class="ps-3 text-danger form-text d-block">{{ msg }}</span>
+          <span
+            v-for="(msg, idx) in errors"
+            :key="idx"
+            class="ps-3 text-danger form-text d-block"
+            >{{ msg }}</span
+          >
         </form>
       </li>
     </ul>
-
   </div>
 </template>
 
 <style scoped>
-  .new-task {
-    line-height: 3em;
-    padding: 0;
-    padding-left: 1em;
-    border-radius: 0 !important;
-  }
+.new-task {
+  line-height: 3em;
+  padding: 0;
+  padding-left: 1em;
+  border-radius: 0 !important;
+}
 
-  .new-task:focus {
-    box-shadow: none;
-  }
+.new-task:focus {
+  box-shadow: none;
+}
 
-  .new-task::placeholder {
-    color: #acacac;
-  }
+.new-task::placeholder {
+  color: #acacac;
+}
 
-  .new-task-buttons {
-    border: 1px solid lightgray;
-    border-top: none;
-  }
+.new-task-buttons {
+  border: 1px solid lightgray;
+  border-top: none;
+}
 </style>

@@ -13,6 +13,8 @@ const handleSignIn = async (event) => {
 
   removeInvalidClass(emailField, passwordField)
 
+  // TODO: urls
+
   try {
     const response = await fetch("http://localhost:3000/auth/login", {
       method: "POST",

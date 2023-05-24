@@ -4,15 +4,19 @@ import { projectEndpoints as url } from "@/rest/endpoints"
 const projects = ref([])
 
 export const requestProjects = (utoken) => {
+  projects.value = []
+
   const onRequest = async () => {
     try {
-      let response = await fetch(url().index, {
+      const response = await fetch(url().index, {
         method: "GET",
         headers: { Authorization: `HS256 ${utoken}` }
       })
 
-      response = await response.json()
-      projects.value = response.data
+      const result = await response.json()
+      if (!response.ok) throw new Error(result.error || "Failed to get projects")
+
+      projects.value = result.data
     } catch (e) {
       console.log(e.message)
     }

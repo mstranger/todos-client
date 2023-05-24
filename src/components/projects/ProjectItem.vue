@@ -1,6 +1,7 @@
 <script setup>
-import { ref, onMounted, computed } from "vue"
+import { ref, onMounted, watch, computed } from "vue"
 import TasksIndex from "@/components/tasks/TasksIndex.vue"
+import { requestTasks } from "@/rest/taskActions"
 
 const emit = defineEmits(["handleErrors", "editProject", "deleteProject"])
 
@@ -18,32 +19,20 @@ const oldProjectName = ref("")
 const totalTaskCount = ref(0)
 const completedTaskCount = ref(0)
 
-onMounted(() => requestTasks(props.data.id))
-
 const allTasksDone = computed(() => totalTaskCount.value == completedTaskCount.value)
 
-// TODO: refactor
-const requestTasks = async (projectId) => {
-  let response = await fetch(`http://localhost:3000/api/v1/projects/${projectId}/tasks`, {
-    method: "GET",
-    headers: { Authorization: `HS256 ${props.utoken}` }
-  })
+onMounted(() => handleRequestTasks())
 
-  response = await response.json()
-
-  tasks.value = response.data.map((t) => {
-    return {
-      ...t.data.attributes,
-      id: t.data.id,
-      commentsCount: t.data.relationships.comments.data.length
-    }
-  })
-
+watch(tasks, () => {
   totalTaskCount.value = tasks.value.length
   completedTaskCount.value = tasks.value.filter((t) => t.completed === true).length
-}
+})
 
 /* actions */
+
+const handleRequestTasks = async () => {
+  tasks.value = (await requestTasks({projectId: props.data.id, utoken: props.utoken})).value
+}
 
 // TODO: edit via new component?
 const handleEditProject = () => {
@@ -112,12 +101,12 @@ const resetEditMode = () => {
       <button class="btn btn-lg hover-shadow" @click="handleCancelEdit">Cancel</button>
     </div>
 
-    <TasksIndex
+    <tasks-index
       v-if="!closed"
       :data="tasks"
       :projectId="props.data.id"
       :utoken="props.utoken"
-      @refreshTasks="requestTasks"
+      @refresh-tasks="handleRequestTasks"
       @update-completed-count="completedTaskCount += $event"
     />
   </div>
