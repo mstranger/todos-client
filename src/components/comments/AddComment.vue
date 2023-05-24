@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted } from "vue"
 import CommentsList from "@/components/comments/CommentsList.vue"
-import { requestComments, createComment, deleteComment } from "@/rest/commentActions"
+import { requestComments, createComment, deleteComment } from "@/rest/actions/comment"
 
 const props = defineProps({
   projectId: { type: Number, required: true },
@@ -20,11 +20,9 @@ const errors = ref([])
 onMounted(() => getComments())
 
 const getComments = async () => {
-  const result = await requestComments({ ...props })
-
-  if (!result) return
-
-  comments.value = result
+  const data = await requestComments({ ...props, errors })
+  if (!data) return
+  comments.value = data
 }
 
 const handleSubmitComment = async (e) => {
@@ -42,7 +40,7 @@ const handleSubmitComment = async (e) => {
 }
 
 const handleDeleteComment = async (id) => {
-  const ok = await deleteComment({ ...props, commentId: id })
+  const ok = await deleteComment({ ...props, commentId: id, errors })
 
   if (!ok) return
 
@@ -72,6 +70,7 @@ const handleDeleteComment = async (id) => {
             <i class="bi bi-paperclip"></i>
           </label>
         </div>
+
         <div class="mb-3">
           <p v-if="attachment" class="text-secondary">
             Selected file:
@@ -85,6 +84,7 @@ const handleDeleteComment = async (id) => {
             @change="attachment = $event.target.files[0].name"
           />
         </div>
+
         <div class="text-end">
           <button type="submit" class="btn btn-lg btn-primary px-5">Save</button>
           <button class="btn btn-lg hover-shadow px-5" @click="$emit('closeComments')">

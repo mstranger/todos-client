@@ -1,28 +1,31 @@
 import { commentEndpoints as url } from "@/rest/endpoints"
 
-export const requestComments = async ({ projectId, taskId, utoken }) => {
+/*
+ * Get all comments
+ */
+export const requestComments = async ({ projectId, taskId, utoken, errors }) => {
   let comments
 
   try {
     const response = await fetch(url(projectId, taskId).index, {
       method: "GET",
-      headers: {
-        Authorization: `HS256 ${utoken}`
-      }
+      headers: { Authorization: `HS256 ${utoken}` }
     })
 
     const result = await response.json()
-
     if (!response.ok) throw new Error(result.error || "Failed to get comments")
 
     comments = result.data
   } catch (e) {
-    console.error(e.message)
+    errors.value = e.message.split()
   }
 
   return comments
 }
 
+/*
+ * Create a new comment
+ */
 export const createComment = async ({ data, projectId, taskId, utoken, errors }) => {
   let success = true
 
@@ -34,10 +37,8 @@ export const createComment = async ({ data, projectId, taskId, utoken, errors })
     })
 
     const result = await response.json()
-
     if (!response.ok) throw new Error(result.errors.join("|") || "Failed to create comment")
   } catch (e) {
-    console.error(e.message)
     errors.value = e.message.split("|")
     success = false
   }
@@ -45,7 +46,10 @@ export const createComment = async ({ data, projectId, taskId, utoken, errors })
   return success
 }
 
-export const deleteComment = async ({ projectId, taskId, commentId, utoken }) => {
+/*
+ * Delete one comment
+ */
+export const deleteComment = async ({ projectId, taskId, commentId, utoken, errors }) => {
   let success = true
 
   try {
@@ -55,10 +59,9 @@ export const deleteComment = async ({ projectId, taskId, commentId, utoken }) =>
     })
 
     const result = await response.json()
-
     if (!response.ok) throw new Error(result.error || "Failed to delete comment")
   } catch (e) {
-    console.error(e.message)
+    errors.value = e.message.split()
     success = false
   }
 
