@@ -1,12 +1,15 @@
 import { ref } from "vue"
 import { taskEndpoints as url } from "@/rest/endpoints"
 
+// TODO: here
 const tasks = ref([])
 
+/*
+ * Get all tasks
+ */
 export const requestTasks = async ({ projectId, utoken }) => {
   tasks.value = []
 
-  // const onRequest = async () => {
   try {
     const response = await fetch(url(projectId).index, {
       method: "GET",
@@ -26,21 +29,43 @@ export const requestTasks = async ({ projectId, utoken }) => {
   } catch (e) {
     console.log(e.message)
   }
-  // }
-
-  // onRequest()
 
   return tasks
 }
 
-/* const requestTasks = async (projectId) => {
+/*
+ * Request a task
+ */
+export const getTask = async ({ projectId, taskId, utoken }) => {
+  let task
 
-  totalTaskCount.value = tasks.value.length
-  completedTaskCount.value = tasks.value.filter((t) => t.completed === true).length
-} */
+  try {
+    const response = await fetch(url(projectId, taskId).task, {
+      method: "GET",
+      headers: { Authorization: `HS256 ${utoken}` }
+    })
 
+    const result = await response.json()
+    if (!response.ok) throw new Error(result.error || "Failed to get task")
+
+    task = {
+      ...result.data.attributes,
+      id: result.data.id,
+      commentsCount: result.data.relationships.comments.data.length
+    }
+  } catch (e) {
+    console.error(e.message)
+  }
+
+  return task
+}
+
+/*
+ * Create a new task
+ */
 export const createTask = async ({ data, utoken, projectId, errors }) => {
-  // const onRequest = async () => {
+  let success = true
+
   try {
     const response = await fetch(url(projectId).index, {
       method: "POST",
@@ -51,17 +76,18 @@ export const createTask = async ({ data, utoken, projectId, errors }) => {
     const result = await response.json()
 
     if (!response.ok) throw new Error(result.errors.join("|") || "Failed to create a new task")
-
-    // await requestTasks({ projectId, utoken })
   } catch (e) {
     console.log(e.message)
     errors.value = e.message.split("|")
+    success = false
   }
-  // }
 
-  // return await onRequest()
+  return success
 }
 
+/*
+ * Update task
+ */
 export const updateTask = async ({ data, projectId, taskId, utoken }) => {
   let errors = false
 
@@ -86,6 +112,9 @@ export const updateTask = async ({ data, projectId, taskId, utoken }) => {
   return errors
 }
 
+/*
+ * Toggle task complete
+ */
 export const toggleDone = async ({ projectId, taskId, utoken }) => {
   let success = true
 
@@ -106,6 +135,9 @@ export const toggleDone = async ({ projectId, taskId, utoken }) => {
   return success
 }
 
+/*
+ * Delete a task
+ */
 export const deleteTask = async ({ projectId, taskId, utoken }) => {
   let success = true
 

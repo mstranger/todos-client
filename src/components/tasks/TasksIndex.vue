@@ -1,7 +1,7 @@
 <script setup>
 import { ref, watch } from "vue"
 import TaskItem from "@/components/tasks/TaskItem.vue"
-import { createTask } from "@/rest/taskActions"
+import { getTask, createTask } from "@/rest/actions/task"
 
 const props = defineProps({
   data: { type: Array, required: true },
@@ -21,31 +21,14 @@ watch(
 )
 
 const refreshTask = async (taskId) => {
-  console.log("should be refresh task", taskId)
-  /*     let response = await fetch(`http://localhost:3000/api/v1/projects/${props.projectId}/tasks/${taskId}`, {
-      method: "GET",
-      headers: { "Authorization": `HS256 ${props.utoken}` }
-    })
+  const elem = await getTask({ projectId: props.projectId, utoken: props.utoken, taskId })
+  const idx = props.data.findIndex((t) => t.id === elem.id)
 
-    response = await response.json()
-
-    const elem = {
-      ...response.data.attributes,
-      id: response.data.id,
-      commentsCount: response.data.relationships.comments.data.length
-    }
-    const idx = props.data.findIndex(t => t.id === elem.id)
-
-    // replace task with a new one
-    tasks.value.splice(idx, 1, elem)
-
-    // sort tasks
-    tasks.value.sort((t1, t2) => {
-      if (t1.priority === t2.priority)
-        return new Date(t1.created_at) - new Date(t2.created_at)
-
-      return t2.priority - t1.priority
-    }) */
+  tasks.value.splice(idx, 1, elem)
+  tasks.value.sort((t1, t2) => {
+    if (t1.priority === t2.priority) return new Date(t1.created_at) - new Date(t2.created_at)
+    return t2.priority - t1.priority
+  })
 }
 
 const deleteTask = (taskId) => {
@@ -59,7 +42,9 @@ const handleCreateTask = async (e) => {
   errors.value = []
   const data = new FormData(e.target)
 
-  await createTask({ data, errors, projectId: props.projectId, utoken: props.utoken })
+  const ok = await createTask({ data, errors, projectId: props.projectId, utoken: props.utoken })
+  if (!ok) return
+
   emit("refreshTasks")
   newTask.value = ""
 }
@@ -68,10 +53,6 @@ const handleNewTaskCancel = () => {
   newTask.value = ""
   errors.value = []
 }
-
-// const clearErrors = () => {
-//   errors.value = []
-// }
 </script>
 
 <template>

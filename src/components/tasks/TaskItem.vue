@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue"
 import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 import AddComment from "@/components/comments/AddComment.vue"
-import { updateTask, toggleDone, deleteTask } from "@/rest/taskActions"
+import { updateTask, toggleDone, deleteTask } from "@/rest/actions/task"
 
 const props = defineProps({
   data: { type: Object, required: true },
@@ -41,7 +41,7 @@ onMounted(() => {
   commentsCount.value = props.data.commentsCount
 })
 
-const urgent = computed(() => {
+const urgency = computed(() => {
   let today = new Date()
   let formatted = `${today.getFullYear()}-${today.getMonth() + 1}-${today.getDate()}`
 
@@ -80,7 +80,6 @@ const handleDeleteTask = async () => {
 // TODO: flash messages via storage?
 
 // TODO: think about change position
-// FIX: doesn't work properly
 const handleChangePriority = async (n) => {
   let taskPriority = props.data.priority
 
@@ -145,8 +144,6 @@ const handleCancelEdit = () => {
   resetEditMode()
 }
 
-// TODO: separate file with requests
-
 const handleCloseDeadlineForm = async (params) => {
   if (params?.saveDB) {
     // update database record
@@ -154,7 +151,7 @@ const handleCloseDeadlineForm = async (params) => {
 
     const data = `data[deadline]=${newDeadline}`
 
-    let errors = updateTask({
+    let errors = await updateTask({
       data,
       projectId: props.projectId,
       taskId: props.data.id,
@@ -216,7 +213,7 @@ const resetEditMode = () => {
       <span
         v-if="dateValue"
         class="form-text px-2"
-        :class="urgent ? 'text-danger' : 'text-success'"
+        :class="urgency ? 'text-danger' : 'text-success'"
       >
         {{ `${dateValue} ${timeValue}` }}
       </span>

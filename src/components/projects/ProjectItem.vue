@@ -1,7 +1,7 @@
 <script setup>
 import { ref, onMounted, watch, computed } from "vue"
 import TasksIndex from "@/components/tasks/TasksIndex.vue"
-import { requestTasks } from "@/rest/taskActions"
+import { requestTasks } from "@/rest/actions/task"
 
 const emit = defineEmits(["handleErrors", "editProject", "deleteProject"])
 
@@ -31,7 +31,8 @@ watch(tasks, () => {
 /* actions */
 
 const handleRequestTasks = async () => {
-  tasks.value = (await requestTasks({projectId: props.data.id, utoken: props.utoken})).value
+  const request = await requestTasks({ projectId: props.data.id, utoken: props.utoken })
+  tasks.value = request.value
 }
 
 // TODO: edit via new component?
