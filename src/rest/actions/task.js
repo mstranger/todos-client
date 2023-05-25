@@ -1,5 +1,5 @@
 import { ref } from "vue"
-import { taskEndpoints as url } from "@/rest/endpoints"
+import { taskUrls as url } from "@/rest/endpoints"
 
 // TODO: here
 const tasks = ref([])
@@ -27,7 +27,7 @@ export const requestTasks = async ({ projectId, utoken }) => {
       }
     })
   } catch (e) {
-    console.log(e.message)
+    console.error(e.message)
   }
 
   return tasks
@@ -77,7 +77,6 @@ export const createTask = async ({ data, utoken, projectId, errors }) => {
 
     if (!response.ok) throw new Error(result.errors.join("|") || "Failed to create a new task")
   } catch (e) {
-    console.log(e.message)
     errors.value = e.message.split("|")
     success = false
   }
@@ -89,7 +88,7 @@ export const createTask = async ({ data, utoken, projectId, errors }) => {
  * Update task
  */
 export const updateTask = async ({ data, projectId, taskId, utoken }) => {
-  let errors = false
+  let errors
 
   try {
     const response = await fetch(url(projectId, taskId).task, {
@@ -116,7 +115,7 @@ export const updateTask = async ({ data, projectId, taskId, utoken }) => {
  * Toggle task complete
  */
 export const toggleDone = async ({ projectId, taskId, utoken }) => {
-  let success = true
+  let errors
 
   try {
     const response = await fetch(url(projectId, taskId).toggle, {
@@ -129,17 +128,17 @@ export const toggleDone = async ({ projectId, taskId, utoken }) => {
     if (!response.ok) throw new Error(result.error || "Faild to toggle tasks done")
   } catch (e) {
     console.error(e.message)
-    success = false
+    errors = e.message.split()
   }
 
-  return success
+  return errors
 }
 
 /*
  * Delete a task
  */
 export const deleteTask = async ({ projectId, taskId, utoken }) => {
-  let success = true
+  let errors
 
   try {
     const response = await fetch(url(projectId, taskId).task, {
@@ -152,8 +151,8 @@ export const deleteTask = async ({ projectId, taskId, utoken }) => {
     if (!response.ok) throw new Error(result.error || "Failed to delete task")
   } catch (e) {
     console.error(e.message)
-    success = false
+    errors = e.message.split()
   }
 
-  return success
+  return errors
 }

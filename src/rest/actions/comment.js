@@ -1,4 +1,4 @@
-import { commentEndpoints as url } from "@/rest/endpoints"
+import { commentUrls as url } from "@/rest/endpoints"
 
 /*
  * Get all comments

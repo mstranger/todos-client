@@ -1,12 +1,12 @@
 import { ref } from "vue"
-import { projectEndpoints as url } from "@/rest/endpoints"
+import { projectUrls as url } from "@/rest/endpoints"
 
 const projects = ref([])
 
 /*
  * Get all projects
  */
-export const requestProjects = (utoken) => {
+export const requestProjects = ({ utoken, errors }) => {
   projects.value = []
 
   // TODO: onRequest
@@ -22,7 +22,8 @@ export const requestProjects = (utoken) => {
 
       projects.value = result.data
     } catch (e) {
-      console.log(e.message)
+      console.error(e.message)
+      errors.value = e.message.split()
     }
   }
 
@@ -96,7 +97,7 @@ export const editProject = async ({ newProjectName, projectId, utoken, errors })
 /*
  * Delete a project
  */
-export const deleteProject = async ({ utoken, projectId, notice }) => {
+export const deleteProject = async ({ utoken, projectId, notice, errors }) => {
   let success = true
   // TODO: onRequest
   const onRequest = async () => {
@@ -106,12 +107,13 @@ export const deleteProject = async ({ utoken, projectId, notice }) => {
         headers: { Authorization: `HS256 ${utoken}` }
       })
 
-      if (!response.ok) throw new Error(response.statusText)
+      if (!response.ok) throw new Error(`Failed to delete project: ${response.statusText}`)
 
       projects.value = projects.value.filter((project) => project.data.id !== projectId)
       notice.value = "Project deteled"
     } catch (e) {
-      console.log(`Failed to delete project: ${e.message}`)
+      console.error(e.message)
+      errors.value = e.message.split()
       success = false
     }
   }

@@ -13,7 +13,7 @@ const newProjectName = ref("")
 const errors = ref([])
 const notice = ref("")
 
-const projects = requestProjects(utoken)
+const projects = requestProjects({utoken, errors})
 
 /* actions */
 
@@ -25,14 +25,14 @@ const handleCreateProject = async (e) => {
 
   if (!ok) return
 
-  requestProjects(utoken)
+  requestProjects({utoken, errors})
   newProjectName.value = ""
 }
 
 const handleCancelNewProject = () => {
+  handleErrors([])
   newProjectName.value = ""
   document.activeElement.blur()
-  handleErrors([])
 }
 
 const handleEditProject = async (data) => {
@@ -50,7 +50,7 @@ const handleDeleteProject = async (projectId) => {
   const yes = confirm("You are going to delete the project. Are you sure?")
   if (!yes) return
 
-  deleteProject({ projectId, utoken, notice })
+  deleteProject({ projectId, utoken, notice, errors })
 }
 
 const handleRemoveFlash = (type) => {

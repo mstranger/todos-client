@@ -1,23 +1,23 @@
-// TODO: dry
+const apiAddress = "http://localhost:3000/api/v1"
 
-export const projectEndpoints = (projectId = null) => {
+export const projectUrls = (projectId = null) => {
   return {
-    index: "http://localhost:3000/api/v1/projects",
-    project: `http://localhost:3000/api/v1/projects/${projectId}`
+    index: `${apiAddress}/projects`,
+    project: `${apiAddress}/projects/${projectId}`
   }
 }
 
-export const taskEndpoints = (projectId, taskId = null) => {
+export const taskUrls = (projectId, taskId = null) => {
   return {
-    index: `http://localhost:3000/api/v1/projects/${projectId}/tasks`,
-    task: `http://localhost:3000/api/v1/projects/${projectId}/tasks/${taskId}`,
-    toggle: `http://localhost:3000/api/v1/projects/${projectId}/tasks/${taskId}/toggle`
+    index: `${apiAddress}/projects/${projectId}/tasks`,
+    task: `${apiAddress}/projects/${projectId}/tasks/${taskId}`,
+    toggle: `${apiAddress}/projects/${projectId}/tasks/${taskId}/toggle`
   }
 }
 
-export const commentEndpoints = (projectId, taskId, commentId = null) => {
+export const commentUrls = (projectId, taskId, commentId = null) => {
   return {
-    index: `http://localhost:3000/api/v1/projects/${projectId}/tasks/${taskId}/comments`,
-    comment: `http://localhost:3000/api/v1/projects/${projectId}/tasks/${taskId}/comments/${commentId}`
+    index: `${apiAddress}/projects/${projectId}/tasks/${taskId}/comments`,
+    comment: `${apiAddress}/projects/${projectId}/tasks/${taskId}/comments/${commentId}`
   }
 }

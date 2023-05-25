@@ -63,24 +63,29 @@ const handleEditTask = () => {
 }
 
 const handleDeleteTask = async () => {
+  emit("handleErrors", [])
+
   // TODO: confirmation via vue component
   const yes = confirm("Are you sure you want to delete this task?")
   if (!yes) return
 
-  const ok = await deleteTask({
+  const errors = await deleteTask({
     projectId: props.projectId,
     taskId: props.data.id,
     utoken: props.utoken
   })
 
   // TODO: here delete from parent data props
-  if (ok) emit("deleteTask", props.data.id)
+  if (errors) emit("handleErrors", errors)
+  else emit("deleteTask", props.data.id)
 }
 
 // TODO: flash messages via storage?
 
 // TODO: think about change position
 const handleChangePriority = async (n) => {
+  emit("handleErrors", [])
+
   let taskPriority = props.data.priority
 
   if (taskPriority === 0 && n === -1) return
@@ -94,9 +99,8 @@ const handleChangePriority = async (n) => {
     utoken: props.utoken
   })
 
-  if (errors) return
-
-  emit("refreshTask", props.data.id)
+  if (errors) emit("handleErrors", errors)
+  else emit("refreshTask", props.data.id)
 }
 
 const handleSaveEdit = async () => {
@@ -121,16 +125,20 @@ const handleSaveEdit = async () => {
 }
 
 const handleToggleCheck = async (e) => {
-  let ok = await toggleDone({
+  emit("handleErrors", [])
+
+  let errors = await toggleDone({
     projectId: props.projectId,
     taskId: props.data.id,
     utoken: props.utoken
   })
 
-  if (!ok) return
-
-  emit("updateCompletedCount", e.target.checked === true ? 1 : -1)
-  emit("refreshTask", props.data.id)
+  if (errors) {
+    emit("handleErrors", errors)
+  } else {
+    emit("updateCompletedCount", e.target.checked === true ? 1 : -1)
+    emit("refreshTask", props.data.id)
+  }
 }
 
 const handleEnter = (e) => {
@@ -145,6 +153,8 @@ const handleCancelEdit = () => {
 }
 
 const handleCloseDeadlineForm = async (params) => {
+  emit("handleErrors", [])
+
   if (params?.saveDB) {
     // update database record
     let newDeadline = dateValue.value !== "" ? `${dateValue.value} ${timeValue.value}` : ""
@@ -158,9 +168,8 @@ const handleCloseDeadlineForm = async (params) => {
       utoken: props.utoken
     })
 
-    if (errors) return
-
-    emit("refreshTask", props.data.id)
+    if (errors) emit("handleErrors", errors)
+    else emit("refreshTask", props.data.id)
   }
 
   datetimeActive.value = false

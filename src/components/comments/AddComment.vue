@@ -9,6 +9,8 @@ const props = defineProps({
   utoken: { type: String, required: true }
 })
 
+// FIX: commentCount when fold/unfold project
+
 const emit = defineEmits(["changeCommentsCount", "closeComments"])
 
 const comments = ref(null)
