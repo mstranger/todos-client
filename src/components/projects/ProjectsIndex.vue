@@ -4,21 +4,16 @@ import { useAuthStore } from "@/store"
 import ProjectItem from "@/components/projects/ProjectItem.vue"
 import FlashAlert from "@/components/general/FlashAlert.vue"
 
-import { requestProjects, createProject, editProject, deleteProject } from "@/rest/projectActions"
+import { requestProjects, createProject, editProject, deleteProject } from "@/rest/actions/project"
 
 const store = useAuthStore()
 const utoken = store.token
 
-// const projects = ref([])
 const newProjectName = ref("")
 const errors = ref([])
 const notice = ref("")
 
 const projects = requestProjects(utoken)
-
-// onMounted(async () => {
-//   projects.value = await requestProjects(utoken)
-// })
 
 /* actions */
 
@@ -26,7 +21,11 @@ const projects = requestProjects(utoken)
 
 const handleCreateProject = async (e) => {
   const data = new FormData(e.target)
-  await createProject({ utoken, data, notice, errors })
+  const ok = await createProject({ utoken, data, notice, errors })
+
+  if (!ok) return
+
+  requestProjects(utoken)
   newProjectName.value = ""
 }
 
