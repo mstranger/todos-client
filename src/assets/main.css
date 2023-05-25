@@ -9,7 +9,7 @@
 }
 
 input:focus {
-  box-shadow: 0 0 0 .05rem rgba(13,110,253,.25) !important;
+  box-shadow: 0 0 0 0.05rem rgba(13, 110, 253, 0.25) !important;
 }
 
 .form-control-lg::placeholder {

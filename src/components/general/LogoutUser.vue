@@ -1,12 +1,12 @@
 <script setup>
-  import { useAuthStore } from "@/store"
-  const store = useAuthStore()
+import { useAuthStore } from "@/store"
+const store = useAuthStore()
 
-  const logout = () => {
-    const answer = confirm("You are going to logout. Continue?")
-    if (!answer) return
-    store.logout()
-  }
+const logout = () => {
+  const answer = confirm("You are going to logout. Continue?")
+  if (!answer) return
+  store.logout()
+}
 </script>
 
 <template>
@@ -20,7 +20,7 @@
 </template>
 
 <style scoped>
-  .btn:hover {
-    color: dimgray;
-  }
+.btn:hover {
+  color: dimgray;
+}
 </style>

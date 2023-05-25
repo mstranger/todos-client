@@ -1,8 +1,8 @@
 <script setup>
-  defineProps({
-    message: {type: String, required: true},
-    type: {type: String, required: true}
-  })
+defineProps({
+  message: { type: String, required: true },
+  type: { type: String, required: true }
+})
 </script>
 
 <template>
@@ -16,7 +16,7 @@
 </template>
 
 <style scoped>
-  .bi-x-circle:hover {
-    cursor: pointer;
-  }
+.bi-x-circle:hover {
+  cursor: pointer;
+}
 </style>
