@@ -13,7 +13,7 @@ const newProjectName = ref("")
 const errors = ref([])
 const notice = ref("")
 
-const projects = requestProjects({utoken, errors})
+const projects = requestProjects({ utoken, errors })
 
 /* actions */
 
@@ -25,7 +25,7 @@ const handleCreateProject = async (e) => {
 
   if (!ok) return
 
-  requestProjects({utoken, errors})
+  requestProjects({ utoken, errors })
   newProjectName.value = ""
 }
 

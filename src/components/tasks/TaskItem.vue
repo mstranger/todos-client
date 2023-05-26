@@ -175,6 +175,11 @@ const handleCloseDeadlineForm = async (params) => {
   datetimeActive.value = false
 }
 
+const handleChangeCommentsCount = (value) => {
+  commentsCount.value += value
+  emit("refreshTask", props.data.id)
+}
+
 const resetEditMode = () => {
   editMode.value = false
   target.value.setAttribute("contenteditable", false)
@@ -189,7 +194,7 @@ const resetEditMode = () => {
     :taskId="props.data.id"
     :utoken="props.utoken"
     @close-comments="openComments = false"
-    @change-comments-count="commentsCount += $event"
+    @change-comments-count="handleChangeCommentsCount"
   />
 
   <li class="project--task-item position-relative d-flex align-items-center">
