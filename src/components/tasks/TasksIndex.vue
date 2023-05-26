@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from "vue"
+import { ref, watch, computed } from "vue"
 import TaskItem from "@/components/tasks/TaskItem.vue"
 import { getTask, createTask } from "@/rest/actions/task"
 
@@ -14,6 +14,8 @@ const emit = defineEmits(["refreshTasks", "updateCompletedCount"])
 const tasks = ref(props.data)
 const newTask = ref("")
 const errors = ref([])
+
+const hasErrors = computed(() => errors.value.length > 0)
 
 watch(
   () => props.data,
@@ -39,7 +41,7 @@ const deleteTask = (taskId) => {
 /* actions */
 
 const handleCreateTask = async (e) => {
-  errors.value = []
+  clearErrors()
   const data = new FormData(e.target)
 
   const ok = await createTask({ data, errors, projectId: props.projectId, utoken: props.utoken })
@@ -51,8 +53,10 @@ const handleCreateTask = async (e) => {
 
 const handleNewTaskCancel = () => {
   newTask.value = ""
-  errors.value = []
+  clearErrors()
 }
+
+const clearErrors = () => (errors.value = [])
 </script>
 
 <template>
@@ -92,12 +96,14 @@ const handleNewTaskCancel = () => {
             </button>
           </div>
 
-          <span
-            v-for="(msg, idx) in errors"
-            :key="idx"
-            class="ps-3 text-danger form-text d-block"
-            >{{ msg }}</span
-          >
+          <div v-if="hasErrors" class="d-flex justify-content-between align-items-center">
+            <ul class="list-unstyled">
+              <li v-for="(msg, idx) in errors" :key="idx" class="ps-3 text-danger form-text">
+                {{ msg }}
+              </li>
+            </ul>
+            <span class="me-3 text-small text-danger pointer" @click="clearErrors">&#128473;</span>
+          </div>
         </form>
       </li>
     </ul>
