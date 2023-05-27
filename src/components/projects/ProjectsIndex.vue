@@ -3,6 +3,7 @@ import { ref } from "vue"
 import { useAuthStore } from "@/store"
 import ProjectItem from "@/components/projects/ProjectItem.vue"
 import FlashAlert from "@/components/general/FlashAlert.vue"
+import ConfirmModal from "@/components/general/ConfirmModal.vue"
 
 import { requestProjects, createProject, editProject, deleteProject } from "@/rest/actions/project"
 
@@ -12,6 +13,8 @@ const utoken = store.token
 const newProjectName = ref("")
 const errors = ref([])
 const notice = ref("")
+const showModal = ref(false)
+const projectIdToDelete = ref(null)
 
 const projects = requestProjects({ utoken, errors })
 
@@ -43,14 +46,20 @@ const handleEditProject = async (data) => {
   if (!ok) data.target.value.innerText = oldProjectName
 }
 
-const handleDeleteProject = async (projectId) => {
+const handleDeleteProject = (projectId) => {
   handleErrors([])
+  projectIdToDelete.value = projectId
+  showModal.value = true
+}
 
-  // TODO: confirmation via vue component
-  const yes = confirm("You are going to delete the project. Are you sure?")
-  if (!yes) return
+const handleErrors = (messages) => {
+  notice.value = ""
+  errors.value = messages
+}
 
-  deleteProject({ projectId, utoken, notice, errors })
+const handleCloseModal = () => {
+  showModal.value = false
+  projectIdToDelete.value = null
 }
 
 const handleRemoveFlash = (type) => {
@@ -66,9 +75,13 @@ const handleRemoveFlash = (type) => {
   }
 }
 
-const handleErrors = (messages) => {
-  notice.value = ""
-  errors.value = messages
+const confirmDeletion = (result) => {
+  if (result) {
+    deleteProject({ projectId: projectIdToDelete.value, utoken, notice, errors })
+  }
+
+  projectIdToDelete.value = null
+  showModal.value = false
 }
 </script>
 
@@ -76,14 +89,14 @@ const handleErrors = (messages) => {
   <div class="container">
     <h2 class="my-4">Projects</h2>
 
-    <flash-alert
+    <FlashAlert
       v-for="(msg, idx) in errors"
       :key="idx"
       :message="msg"
       type="danger"
       @clear-messages="handleRemoveFlash"
     />
-    <flash-alert
+    <FlashAlert
       v-if="notice"
       :message="notice"
       type="warning"
@@ -94,7 +107,7 @@ const handleErrors = (messages) => {
       No projects has been created yet
     </div>
 
-    <project-item
+    <ProjectItem
       v-for="project in projects"
       :key="project.data.id"
       :data="project.data"
@@ -124,6 +137,14 @@ const handleErrors = (messages) => {
         </button>
       </div>
     </form>
+
+    <ConfirmModal
+      v-show="showModal"
+      title="Delete project"
+      body="Do you realy want to delete this project?"
+      @close-modal="handleCloseModal"
+      @confirm-action="confirmDeletion"
+    />
   </div>
 </template>
 
