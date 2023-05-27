@@ -2,7 +2,7 @@
 import { ref, computed, onMounted } from "vue"
 import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 import AddComment from "@/components/comments/AddComment.vue"
-import { updateTask, toggleDone, deleteTask } from "@/rest/actions/task"
+import { updateTask, toggleDone } from "@/rest/actions/task"
 
 const props = defineProps({
   data: { type: Object, required: true },
@@ -10,7 +10,6 @@ const props = defineProps({
   utoken: { type: String, required: true }
 })
 
-// TODO: refreshTasks
 const emit = defineEmits([
   "refreshTasks",
   "deleteTask",
@@ -60,24 +59,6 @@ const handleEditTask = () => {
   oldTaskTitle.value = elem.innerText.trim()
   elem.setAttribute("contenteditable", true)
   elem.focus()
-}
-
-const handleDeleteTask = async () => {
-  emit("handleErrors", [])
-
-  // TODO: confirmation via vue component
-  const yes = confirm("Are you sure you want to delete this task?")
-  if (!yes) return
-
-  const errors = await deleteTask({
-    projectId: props.projectId,
-    taskId: props.data.id,
-    utoken: props.utoken
-  })
-
-  // TODO: here delete from parent data props
-  if (errors) emit("handleErrors", errors)
-  else emit("deleteTask", props.data.id)
 }
 
 // TODO: flash messages via storage?
@@ -239,7 +220,7 @@ const resetEditMode = () => {
       <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="openComments = true"></i>
       <i class="bi bi-clock me-3" @click="handleEditDeadline"></i>
       <i class="bi bi-pencil-fill me-3" @click="handleEditTask"></i>
-      <i class="bi bi-trash" style="font-size: 1.0725em" @click="handleDeleteTask"></i>
+      <i class="bi bi-trash" style="font-size: 1.0725em" @click="emit('deleteTask', props.data.id)"></i>
     </span>
 
     <deadline-form

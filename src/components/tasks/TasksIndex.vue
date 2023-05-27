@@ -1,7 +1,8 @@
 <script setup>
 import { ref, watch, computed } from "vue"
 import TaskItem from "@/components/tasks/TaskItem.vue"
-import { getTask, createTask } from "@/rest/actions/task"
+import { getTask, createTask, deleteTask } from "@/rest/actions/task"
+import ConfirmModal from "@/components/general/ConfirmModal.vue"
 
 const props = defineProps({
   data: { type: Array, required: true },
@@ -14,6 +15,8 @@ const emit = defineEmits(["refreshTasks", "updateCompletedCount"])
 const tasks = ref(props.data)
 const newTask = ref("")
 const errors = ref([])
+const showModal = ref(false)
+const taskIdToDelete = ref(null)
 
 const hasErrors = computed(() => errors.value.length > 0)
 
@@ -21,6 +24,8 @@ watch(
   () => props.data,
   () => (tasks.value = props.data)
 )
+
+/* actions */
 
 const refreshTask = async (taskId) => {
   const elem = await getTask({ projectId: props.projectId, utoken: props.utoken, taskId })
@@ -33,12 +38,31 @@ const refreshTask = async (taskId) => {
   })
 }
 
-const deleteTask = (taskId) => {
-  const idx = props.data.findIndex((t) => t.id === taskId)
-  tasks.value.splice(idx, 1)
+const handleDeleteTask = (taskId) => {
+  errors.value = []
+  showModal.value = true
+  taskIdToDelete.value = taskId
 }
 
-/* actions */
+const confirmDeletion = async (result) => {
+  if (result) {
+    const errs = await deleteTask({
+      projectId: props.projectId,
+      taskId: taskIdToDelete.value,
+      utoken: props.utoken
+    })
+
+    if (errs) {
+      errors.value = errs
+    } else {
+      const idx = props.data.findIndex((t) => t.id === taskIdToDelete.value)
+      tasks.value.splice(idx, 1)
+    }
+  }
+
+  taskIdToDelete.value = null
+  showModal.value = false
+}
 
 const handleCreateTask = async (e) => {
   clearErrors()
@@ -56,6 +80,11 @@ const handleNewTaskCancel = () => {
   clearErrors()
 }
 
+const handleCloseModal = () => {
+  showModal.value = false
+  taskIdToDelete.value = null
+}
+
 const clearErrors = () => (errors.value = [])
 </script>
 
@@ -71,7 +100,7 @@ const clearErrors = () => (errors.value = [])
         @refresh-tasks="$emit('refreshTasks', props.projectId)"
         @handle-errors="errors = $event"
         @refresh-task="refreshTask"
-        @delete-task="deleteTask"
+        @delete-task="handleDeleteTask"
         @update-completed-count="$emit('updateCompletedCount', $event)"
       />
 
@@ -107,6 +136,14 @@ const clearErrors = () => (errors.value = [])
         </form>
       </li>
     </ul>
+
+    <ConfirmModal
+      v-show="showModal"
+      title="Delete task"
+      body="Do you realy want to delete this task?"
+      @close-modal="handleCloseModal"
+      @confirm-action="confirmDeletion"
+    />
   </div>
 </template>
 
