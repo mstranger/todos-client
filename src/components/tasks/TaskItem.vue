@@ -24,7 +24,7 @@ const oldTaskTitle = ref("")
 const datetimeActive = ref(false)
 const timeValue = ref("12:00")
 const dateValue = ref("")
-const openComments = ref(false)
+const showModal = ref(false)
 const commentsCount = ref(null)
 
 onMounted(() => {
@@ -169,14 +169,16 @@ const resetEditMode = () => {
 </script>
 
 <template>
-  <add-comment
-    v-if="openComments"
-    :projectId="props.projectId"
-    :taskId="props.data.id"
-    :utoken="props.utoken"
-    @close-comments="openComments = false"
-    @change-comments-count="handleChangeCommentsCount"
-  />
+  <Teleport to="body">
+    <add-comment
+      v-show="showModal"
+      :projectId="props.projectId"
+      :taskId="props.data.id"
+      :utoken="props.utoken"
+      @close-modal="showModal = false"
+      @change-comments-count="handleChangeCommentsCount"
+    />
+  </Teleport>
 
   <li class="project--task-item position-relative d-flex align-items-center">
     <span class="task-actions">
@@ -217,7 +219,7 @@ const resetEditMode = () => {
       <span v-if="commentsCount > 0" class="me-1" style="font-size: 0.85rem">
         {{ commentsCount }}
       </span>
-      <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="openComments = true"></i>
+      <i class="bi bi-chat me-3" style="font-size: 1.0725em" @click="showModal = true"></i>
       <i class="bi bi-clock me-3" @click="handleEditDeadline"></i>
       <i class="bi bi-pencil-fill me-3" @click="handleEditTask"></i>
       <i class="bi bi-trash" style="font-size: 1.0725em" @click="emit('deleteTask', props.data.id)"></i>
