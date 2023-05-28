@@ -170,7 +170,7 @@ const resetEditMode = () => {
 
 <template>
   <Teleport to="body">
-    <add-comment
+    <AddComment
       v-show="showModal"
       :projectId="props.projectId"
       :taskId="props.data.id"
@@ -225,7 +225,7 @@ const resetEditMode = () => {
       <i class="bi bi-trash" style="font-size: 1.0725em" @click="emit('deleteTask', props.data.id)"></i>
     </span>
 
-    <deadline-form
+    <DeadlineForm
       v-if="datetimeActive"
       @close-deadline-form="handleCloseDeadlineForm"
       v-model:time="timeValue"
