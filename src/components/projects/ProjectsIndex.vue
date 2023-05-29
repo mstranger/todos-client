@@ -1,5 +1,5 @@
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { useAuthStore } from "@/store"
 import ProjectItem from "@/components/projects/ProjectItem.vue"
 import FlashAlert from "@/components/general/FlashAlert.vue"
@@ -10,25 +10,29 @@ import { requestProjects, createProject, editProject, deleteProject } from "@/re
 const store = useAuthStore()
 const utoken = store.token
 
-const newProjectName = ref("")
+const projects = ref([])
 const errors = ref([])
 const notice = ref("")
 const showModal = ref(false)
+const newProjectName = ref("")
 const projectIdToDelete = ref(null)
 
-const projects = requestProjects({ utoken, errors })
+onMounted(async () => {
+  projects.value = await requestProjects({ utoken, errors })
+})
 
 /* actions */
 
 // TODO: add visual loader
 
 const handleCreateProject = async (e) => {
-  const data = new FormData(e.target)
-  const ok = await createProject({ utoken, data, notice, errors })
+  let data = new FormData(e.target)
+  let ok = await createProject({ utoken, data, errors })
 
   if (!ok) return
 
-  requestProjects({ utoken, errors })
+  notice.value = "New project was created"
+  projects.value = await requestProjects({ utoken, errors })
   newProjectName.value = ""
 }
 
@@ -42,7 +46,8 @@ const handleEditProject = async (data) => {
   handleErrors([])
 
   const oldProjectName = data.oldProjectName.value
-  const ok = await editProject({ ...data, utoken, errors })
+  let ok = await editProject({ ...data, utoken, errors })
+  // TODO: elem focus?
   if (!ok) data.target.value.innerText = oldProjectName
 }
 
@@ -50,6 +55,21 @@ const handleDeleteProject = (projectId) => {
   handleErrors([])
   projectIdToDelete.value = projectId
   showModal.value = true
+}
+
+const confirmDeletion = async (result) => {
+  let projectId = projectIdToDelete.value
+  if (result) {
+    let ok = await deleteProject({ projectId, utoken, errors })
+
+    if (ok) {
+      notice.value = "Project deteled"
+      projects.value = projects.value.filter((project) => project.data.id !== projectId)
+    }
+  }
+
+  projectIdToDelete.value = null
+  showModal.value = false
 }
 
 const handleErrors = (messages) => {
@@ -73,15 +93,6 @@ const handleRemoveFlash = (type) => {
     default:
       console.log(`Undefined type: ${type}`)
   }
-}
-
-const confirmDeletion = (result) => {
-  if (result) {
-    deleteProject({ projectId: projectIdToDelete.value, utoken, notice, errors })
-  }
-
-  projectIdToDelete.value = null
-  showModal.value = false
 }
 </script>
 

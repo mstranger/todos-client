@@ -1,33 +1,25 @@
-import { ref } from "vue"
 import { projectUrls as url } from "@/rest/endpoints"
-
-const projects = ref([])
 
 /*
  * Get all projects
  */
-export const requestProjects = ({ utoken, errors }) => {
-  projects.value = []
+export const requestProjects = async ({ utoken, errors }) => {
+  let projects = []
 
-  // TODO: onRequest
-  const onRequest = async () => {
-    try {
-      const response = await fetch(url().index, {
-        method: "GET",
-        headers: { Authorization: `HS256 ${utoken}` }
-      })
+  try {
+    const response = await fetch(url().index, {
+      method: "GET",
+      headers: { Authorization: `HS256 ${utoken}` }
+    })
 
-      const result = await response.json()
-      if (!response.ok) throw new Error(result.error || "Failed to get projects")
+    const result = await response.json()
+    if (!response.ok) throw new Error(result.error || "Failed to get projects")
 
-      projects.value = result.data
-    } catch (e) {
-      console.error(e.message)
-      errors.value = e.message.split()
-    }
+    projects = result.data
+  } catch (e) {
+    console.error(e.message)
+    errors.value = e.message.split()
   }
-
-  onRequest()
 
   return projects
 }
@@ -35,31 +27,23 @@ export const requestProjects = ({ utoken, errors }) => {
 /*
  * Create a new project
  */
-export const createProject = async ({ data, utoken, errors, notice }) => {
-  // TODO: onRequest
+export const createProject = async ({ data, utoken, errors }) => {
   let success = true
 
-  const onRequest = async () => {
-    try {
-      const response = await fetch(url().index, {
-        method: "POST",
-        headers: { Authorization: `HS256 ${utoken}` },
-        body: data
-      })
+  try {
+    const response = await fetch(url().index, {
+      method: "POST",
+      headers: { Authorization: `HS256 ${utoken}` },
+      body: data
+    })
 
-      const result = await response.json()
+    const result = await response.json()
 
-      if (!response.ok) throw new Error(result.errors.join("|") || "Failed to request")
-
-      notice.value = "New project was created"
-      errors.value = []
-    } catch (e) {
-      errors.value = e.message.split("|")
-      success = false
-    }
+    if (!response.ok) throw new Error(result.errors.join("|") || "Failed to create a new project")
+  } catch (e) {
+    errors.value = e.message.split("|")
+    success = false
   }
-
-  await onRequest()
 
   return success
 }
@@ -69,55 +53,46 @@ export const createProject = async ({ data, utoken, errors, notice }) => {
  */
 export const editProject = async ({ newProjectName, projectId, utoken, errors }) => {
   let success = true
-  // TODO: onRequest
-  const onRequest = async () => {
-    try {
-      const response = await fetch(url(projectId).project, {
-        method: "PUT",
-        headers: {
-          Authorization: `HS256 ${utoken}`,
-          "Content-Type": "application/x-www-form-urlencoded"
-        },
-        body: `data[name]=${newProjectName}`
-      })
 
-      const result = await response.json()
+  try {
+    const response = await fetch(url(projectId).project, {
+      method: "PUT",
+      headers: {
+        Authorization: `HS256 ${utoken}`,
+        "Content-Type": "application/x-www-form-urlencoded"
+      },
+      body: `data[name]=${newProjectName}`
+    })
 
-      if (!response.ok) throw new Error(result.errors.join("|") || "Failed to request")
-    } catch (e) {
-      errors.value = e.message.split("|")
-      success = false
-    }
+    const result = await response.json()
+
+    if (!response.ok) throw new Error(result.errors.join("|") || "Failed to request")
+  } catch (e) {
+    errors.value = e.message.split("|")
+    success = false
   }
 
-  await onRequest()
   return success
 }
 
 /*
  * Delete a project
  */
-export const deleteProject = async ({ utoken, projectId, notice, errors }) => {
+export const deleteProject = async ({ utoken, projectId, errors }) => {
   let success = true
-  // TODO: onRequest
-  const onRequest = async () => {
-    try {
-      const response = await fetch(url(projectId).project, {
-        method: "DELETE",
-        headers: { Authorization: `HS256 ${utoken}` }
-      })
 
-      if (!response.ok) throw new Error(`Failed to delete project: ${response.statusText}`)
+  try {
+    const response = await fetch(url(projectId).project, {
+      method: "DELETE",
+      headers: { Authorization: `HS256 ${utoken}` }
+    })
 
-      projects.value = projects.value.filter((project) => project.data.id !== projectId)
-      notice.value = "Project deteled"
-    } catch (e) {
-      console.error(e.message)
-      errors.value = e.message.split()
-      success = false
-    }
+    if (!response.ok) throw new Error(`Failed to delete project: ${response.statusText}`)
+  } catch (e) {
+    console.error(e.message)
+    errors.value = e.message.split()
+    success = false
   }
 
-  await onRequest()
   return success
 }
