@@ -21,3 +21,10 @@ export const commentUrls = (projectId, taskId, commentId = null) => {
     comment: `${apiAddress}/projects/${projectId}/tasks/${taskId}/comments/${commentId}`
   }
 }
+
+export const authUrls = () => {
+  return {
+    signin: "http://localhost:3000/auth/login",
+    signup: "http://localhost:3000/auth/signup"
+  }
+}

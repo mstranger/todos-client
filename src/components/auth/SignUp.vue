@@ -1,5 +1,6 @@
 <script setup>
 import { ref } from "vue"
+import { authUrls as url } from "@/rest/endpoints"
 
 const required = ref("")
 const errors = ref([])
@@ -14,10 +15,8 @@ const handleSignUp = async (e) => {
   required.value = ""
   errors.value = []
 
-  // TODO: urls
-
   try {
-    const response = await fetch("http://localhost:3000/auth/signup", {
+    const response = await fetch(url().signup, {
       method: "POST",
       body: new FormData(e.target)
     })

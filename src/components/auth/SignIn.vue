@@ -2,6 +2,7 @@
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { useAuthStore } from "@/store"
+import { authUrls as url } from "@/rest/endpoints"
 
 const error = ref("")
 const store = useAuthStore()
@@ -13,10 +14,8 @@ const handleSignIn = async (event) => {
 
   removeInvalidClass(emailField, passwordField)
 
-  // TODO: urls
-
   try {
-    const response = await fetch("http://localhost:3000/auth/login", {
+    const response = await fetch(url().signin, {
       method: "POST",
       body: new FormData(event.target)
     })
