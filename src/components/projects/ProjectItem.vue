@@ -45,8 +45,7 @@ const handleEditProject = () => {
 
 const handleSaveEdit = () => {
   const newProjectName = target.value.innerText.trim()
-  emit("editProject", { target, newProjectName, oldProjectName, projectId: props.data.id })
-  resetEditMode()
+  emit("editProject", { target, newProjectName, oldProjectName, editMode, projectId: props.data.id })
 }
 
 const handleCancelEdit = () => {

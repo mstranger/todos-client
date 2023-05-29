@@ -46,10 +46,15 @@ const handleCancelNewProject = () => {
 const handleEditProject = async (data) => {
   handleErrors([])
 
-  const oldProjectName = data.oldProjectName.value
   let ok = await editProject({ ...data, utoken, errors })
-  // TODO: elem focus?
-  if (!ok) data.target.value.innerText = oldProjectName
+  if (!ok) {
+    data.target.value.focus()
+    return
+  }
+
+  data.editMode.value = false
+  data.target.value.setAttribute("contenteditable", false)
+  data.oldProjectName.value = ""
 }
 
 const handleDeleteProject = (projectId) => {
