@@ -48,12 +48,11 @@ const handleEditProject = async (data) => {
 
   let ok = await editProject({ ...data, utoken, errors })
   if (!ok) {
-    data.target.value.focus()
+    document.querySelector("#project-edit").focus()
     return
   }
 
   data.editMode.value = false
-  data.target.value.setAttribute("contenteditable", false)
   data.oldProjectName.value = ""
 }
 

@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, watch, computed } from "vue"
+import { ref, onMounted, watch, computed, nextTick } from "vue"
 import TasksIndex from "@/components/tasks/TasksIndex.vue"
 import { requestTasks } from "@/rest/actions/task"
 
@@ -10,10 +10,10 @@ const props = defineProps({
   utoken: { type: String, required: true }
 })
 
+const title = ref(props.data.attributes.name)
 const tasks = ref([])
 const closed = ref(true)
 const editMode = ref(false)
-const target = ref(null)
 const oldProjectName = ref("")
 
 const totalTaskCount = ref(0)
@@ -34,35 +34,36 @@ const handleRequestTasks = async () => {
   tasks.value = await requestTasks({ projectId: props.data.id, utoken: props.utoken })
 }
 
-// TODO: edit via new component?
 const handleEditProject = () => {
-  const elem = target.value
   editMode.value = true
-  oldProjectName.value = elem.innerText.trim()
-  elem.setAttribute("contenteditable", true)
-  elem.focus()
+
+  nextTick(() => {
+    let elem = document.querySelector("#project-edit")
+    oldProjectName.value = title.value
+    elem.focus()
+  })
 }
 
 const handleSaveEdit = () => {
-  const newProjectName = target.value.innerText.trim()
-  emit("editProject", { target, newProjectName, oldProjectName, editMode, projectId: props.data.id })
+  const newProjectName = title.value
+  emit("editProject", { newProjectName, oldProjectName, editMode, projectId: props.data.id })
 }
 
 const handleCancelEdit = () => {
-  target.value.innerText = oldProjectName.value
+  title.value = oldProjectName.value
   resetEditMode()
 }
 
 const resetEditMode = () => {
   editMode.value = false
-  target.value.setAttribute("contenteditable", false)
   oldProjectName.value = ""
+  emit("handleErrors", [])
 }
 </script>
 
 <template>
   <div class="project">
-    <header class="project-header d-flex position-relative" @click="closed = !closed">
+    <div v-if="!editMode" class="project-main d-flex position-relative" @click="closed = !closed">
       <span
         v-if="tasks.length > 0 && allTasksDone"
         class="d-block position-absolute text-success"
@@ -74,16 +75,7 @@ const resetEditMode = () => {
       <span class="ps-3" v-if="closed"><i class="bi bi-caret-right-fill"></i></span>
       <span class="ps-3" v-else><i class="bi bi-caret-down-fill"></i></span>
 
-      <div
-        ref="target"
-        class="project-name ms-1 px-2"
-        contenteditable="false"
-        @click="(e) => (editMode ? e.stopPropagation() : null)"
-        @keydown.enter.prevent="handleSaveEdit"
-        @keyup.escape="handleCancelEdit"
-      >
-        {{ props.data.attributes.name }}
-      </div>
+      <div class="project-name ms-1 px-2">{{ title }}</div>
 
       <div class="project-actions ms-auto me-4" @click="(e) => e.stopPropagation()">
         <i class="bi bi-pencil-fill me-3" @click="handleEditProject"></i>
@@ -93,7 +85,18 @@ const resetEditMode = () => {
           @click="emit('deleteProject', props.data.id)"
         ></i>
       </div>
-    </header>
+    </div>
+
+    <div v-if="editMode" class="project-name">
+      <input
+        type="text"
+        id="project-edit"
+        class="form-control project--edit"
+        v-model.trim="title"
+        @keydown.enter.prevent="handleSaveEdit"
+        @keyup.escape="handleCancelEdit"
+      />
+    </div>
 
     <div v-if="editMode" class="my-2">
       <button class="btn btn-lg btn-primary px-4" @click="handleSaveEdit">Save</button>
@@ -116,25 +119,30 @@ const resetEditMode = () => {
   margin-bottom: 0.5em;
 }
 
-.project-name:focus {
-  cursor: text;
+.project--edit {
+  line-height: 2.2em;
+  padding-left: 3.1em;
 }
 
-.project-header {
+.project--edit:focus {
+  border-radius: 0 !important;
+}
+
+.project-main {
   border: 1px solid lightgray;
   border-bottom: none;
   line-height: 3em;
   padding-left: 0.35em;
-  background-color: #e1e7f3; /* #cee */
+  background-color: #e1e7f3;
   font-weight: 500;
 }
 
-.project-header:hover {
+.project-main:hover {
   cursor: pointer;
   background-color: #cfd8ec;
 }
 
-.project-header:hover > .project-actions {
+.project-main:hover > .project-actions {
   visibility: visible;
 }
 

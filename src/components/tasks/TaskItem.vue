@@ -57,7 +57,7 @@ const handleEditTask = () => {
   editMode.value = true
 
   nextTick(() => {
-    let elem = document.querySelector("#project-edit")
+    let elem = document.querySelector("#task-edit")
     oldTaskTitle.value = title.value
     elem.focus()
   })
@@ -100,7 +100,7 @@ const handleSaveEdit = async () => {
 
   if (errors) {
     emit("handleErrors", errors)
-    document.querySelector("#project-edit").focus()
+    document.querySelector("#task-edit").focus()
   } else {
     emit("refreshTask", props.data.id)
     resetEditMode()
@@ -230,7 +230,7 @@ const resetEditMode = () => {
   <li v-if="editMode" class="project--task-item">
     <input
       type="text"
-      id="project-edit"
+      id="task-edit"
       class="form-control project--task-item__edit"
       v-model.trim="title"
       @keyup.esc="handleCancelEdit"
