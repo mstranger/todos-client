@@ -90,7 +90,7 @@ const resetEditMode = () => {
         <i
           class="bi bi-trash"
           style="font-size: 1.0725em"
-          @click="$emit('deleteProject', props.data.id)"
+          @click="emit('deleteProject', props.data.id)"
         ></i>
       </div>
     </header>

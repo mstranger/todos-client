@@ -141,6 +141,7 @@ const handleRemoveFlash = (type) => {
         type="text"
         name="data[name]"
         class="form-control form-control-lg new-project mb-2"
+        style="margin-top: 0.65rem"
         placeholder="Enter Project name ..."
         v-model="newProjectName"
       />

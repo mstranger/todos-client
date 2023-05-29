@@ -3,6 +3,7 @@ import { useAuthStore } from "@/store"
 const store = useAuthStore()
 
 const logout = () => {
+  // TODO: via component
   const answer = confirm("You are going to logout. Continue?")
   if (!answer) return
   store.logout()

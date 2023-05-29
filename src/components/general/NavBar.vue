@@ -12,10 +12,10 @@ const currentUser = computed(() => store.isAuthenticated)
   <nav class="navbar navbar-expand-lg bg-light">
     <div class="container align-items-center">
       <div class="navbar-brand">
-        <router-link to="/" class="text-decoration-none text-dark">Tasks</router-link>
+        <RouterLink to="/" class="text-decoration-none text-dark">Tasks</RouterLink>
       </div>
 
-      <logout-user v-if="currentUser" title="Logout" />
+      <LogoutUser v-if="currentUser" title="Logout" />
     </div>
   </nav>
 </template>

@@ -4,9 +4,9 @@
       <h1>Todos Application</h1>
       <p class="text-secondary">
         Your need to
-        <router-link :to="{ name: 'signin' }">login</router-link>
+        <RouterLink :to="{ name: 'signin' }">login</RouterLink>
         or
-        <router-link :to="{ name: 'signup' }">register</router-link>
+        <RouterLink :to="{ name: 'signup' }">register</RouterLink>
         first
       </p>
     </div>
