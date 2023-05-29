@@ -1,14 +1,10 @@
-import { ref } from "vue"
 import { taskUrls as url } from "@/rest/endpoints"
-
-// TODO: here
-const tasks = ref([])
 
 /*
  * Get all tasks
  */
 export const requestTasks = async ({ projectId, utoken }) => {
-  tasks.value = []
+  let tasks = []
 
   try {
     const response = await fetch(url(projectId).index, {
@@ -19,7 +15,7 @@ export const requestTasks = async ({ projectId, utoken }) => {
     const result = await response.json()
     if (!response.ok) throw new Error(result.error || "Failed to get tasks")
 
-    tasks.value = result.data.map((t) => {
+    tasks = result.data.map((t) => {
       return {
         ...t.data.attributes,
         id: t.data.id,

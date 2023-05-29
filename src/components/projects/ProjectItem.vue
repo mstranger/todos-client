@@ -31,8 +31,7 @@ watch(tasks, () => {
 /* actions */
 
 const handleRequestTasks = async () => {
-  const request = await requestTasks({ projectId: props.data.id, utoken: props.utoken })
-  tasks.value = request.value
+  tasks.value = await requestTasks({ projectId: props.data.id, utoken: props.utoken })
 }
 
 // TODO: edit via new component?
