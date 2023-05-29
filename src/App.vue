@@ -19,8 +19,6 @@ watch(
   }
 )
 
-// TODO: try invalid token errors handler
-
 useAuthStore().tryLogin()
 </script>
 

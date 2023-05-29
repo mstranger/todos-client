@@ -91,7 +91,7 @@ const clearErrors = () => (errors.value = [])
 <template>
   <div class="position-relative">
     <ul class="list-unstyled tasks-list mb-0">
-      <task-item
+      <TaskItem
         v-for="task in tasks"
         :key="task.id"
         :data="task"

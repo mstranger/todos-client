@@ -41,13 +41,17 @@ export const useAuthStore = defineStore("auth", {
 
     // restore session
     tryLogin() {
-      const token = localStorage.getItem("token")
+      try {
+        const token = localStorage.getItem("token")
 
-      if (token) {
-        const expireIn = jwt_decode(token).exp * 1000
+        if (token) {
+          const expireIn = jwt_decode(token).exp * 1000
 
-        if (expireIn - new Date().getTime() < 0) this.logout()
-        else this.login(token)
+          if (expireIn - new Date().getTime() < 0) this.logout()
+          else this.login(token)
+        }
+      } catch (e) {
+        console.error(e.message)
       }
     }
   }

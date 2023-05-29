@@ -80,7 +80,7 @@ const addInvalidClass = (errs, ...inputs) => {
 
       <div class="alert alert-success" v-if="success">
         <strong>Well done!</strong> You've successfully registered. You can
-        <router-link :to="{ name: 'signin' }">login</router-link> now
+        <RouterLink :to="{ name: 'signin' }">login</RouterLink> now
       </div>
 
       <input
@@ -106,7 +106,7 @@ const addInvalidClass = (errs, ...inputs) => {
 
       <div class="form-text mt-0">
         Already a member?
-        <router-link to="signin">Sign in</router-link>
+        <RouterLink to="signin">Sign in</RouterLink>
       </div>
     </form>
   </div>

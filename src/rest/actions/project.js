@@ -39,7 +39,7 @@ export const createProject = async ({ data, utoken, errors }) => {
 
     const result = await response.json()
 
-    if (!response.ok) throw new Error(result.errors.join("|") || "Failed to create a new project")
+    if (!response.ok) throw new Error(result.errors?.join("|") || "Failed to create a new project")
   } catch (e) {
     errors.value = e.message.split("|")
     success = false
@@ -66,7 +66,7 @@ export const editProject = async ({ newProjectName, projectId, utoken, errors })
 
     const result = await response.json()
 
-    if (!response.ok) throw new Error(result.errors.join("|") || "Failed to request")
+    if (!response.ok) throw new Error(result.errors?.join("|") || "Failed to request")
   } catch (e) {
     errors.value = e.message.split("|")
     success = false

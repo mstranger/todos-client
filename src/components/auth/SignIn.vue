@@ -64,7 +64,7 @@ const removeInvalidClass = (...fields) => {
 
       <div class="form-text mt-0">
         Don't have an account?
-        <router-link to="signup">Sign up</router-link>
+        <RouterLink to="signup">Sign up</RouterLink>
       </div>
     </form>
   </div>

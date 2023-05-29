@@ -71,7 +71,7 @@ export const createTask = async ({ data, utoken, projectId, errors }) => {
 
     const result = await response.json()
 
-    if (!response.ok) throw new Error(result.errors.join("|") || "Failed to create a new task")
+    if (!response.ok) throw new Error(result.errors?.join("|") || "Failed to create a new task")
   } catch (e) {
     errors.value = e.message.split("|")
     success = false
@@ -98,7 +98,7 @@ export const updateTask = async ({ data, projectId, taskId, utoken }) => {
 
     const result = await response.json()
 
-    if (!response.ok) throw new Error(result.errors.join("|") || "Failed to update task")
+    if (!response.ok) throw new Error(result.errors?.join("|") || "Failed to update task")
   } catch (e) {
     console.error(e.message)
     errors = e.message.split("|")

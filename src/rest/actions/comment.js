@@ -37,7 +37,7 @@ export const createComment = async ({ data, projectId, taskId, utoken, errors })
     })
 
     const result = await response.json()
-    if (!response.ok) throw new Error(result.errors.join("|") || "Failed to create comment")
+    if (!response.ok) throw new Error(result.errors?.join("|") || "Failed to create comment")
   } catch (e) {
     errors.value = e.message.split("|")
     success = false

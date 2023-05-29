@@ -101,7 +101,7 @@ const resetEditMode = () => {
       <button class="btn btn-lg hover-shadow" @click="handleCancelEdit">Cancel</button>
     </div>
 
-    <tasks-index
+    <TasksIndex
       v-if="!closed"
       :data="tasks"
       :projectId="props.data.id"
