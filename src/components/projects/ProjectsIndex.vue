@@ -4,6 +4,7 @@ import { useAuthStore } from "@/store"
 import ProjectItem from "@/components/projects/ProjectItem.vue"
 import FlashAlert from "@/components/general/FlashAlert.vue"
 import ConfirmModal from "@/components/general/ConfirmModal.vue"
+import RequestLoader from "@/components/general/RequestLoader.vue"
 
 import { requestProjects, createProject, editProject, deleteProject } from "@/rest/actions/project"
 
@@ -16,14 +17,14 @@ const notice = ref("")
 const showModal = ref(false)
 const newProjectName = ref("")
 const projectIdToDelete = ref(null)
+const inProgress = ref(true)
 
 onMounted(async () => {
   projects.value = await requestProjects({ utoken, errors })
+  inProgress.value = false
 })
 
 /* actions */
-
-// TODO: add visual loader
 
 const handleCreateProject = async (e) => {
   let data = new FormData(e.target)
@@ -99,6 +100,8 @@ const handleRemoveFlash = (type) => {
 <template>
   <div class="container">
     <h2 class="my-4">Projects</h2>
+
+    <RequestLoader :active="inProgress" />
 
     <FlashAlert
       v-for="(msg, idx) in errors"

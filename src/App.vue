@@ -25,6 +25,6 @@ useAuthStore().tryLogin()
 </script>
 
 <template>
-  <nav-bar />
-  <router-view />
+  <NavBar />
+  <RouterView />
 </template>
