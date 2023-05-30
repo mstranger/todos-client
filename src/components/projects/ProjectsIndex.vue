@@ -158,9 +158,10 @@ const handleRemoveFlash = (type) => {
     </form>
 
     <ConfirmModal
-      v-show="showModal"
+      v-if="showModal"
       title="Delete project"
       body="Do you realy want to delete this project?"
+      okButton="Delete"
       @close-modal="handleCloseModal"
       @confirm-action="confirmDeletion"
     />

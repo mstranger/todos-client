@@ -3,7 +3,8 @@ import PopupModal from "@/components/general/PopupModal.vue"
 
 defineProps({
   title: { type: String, required: true },
-  body: { type: String, required: true }
+  body: { type: String, required: true },
+  okButton: { type: String, default: "Confirm" }
 })
 
 const emit = defineEmits(["close-modal", "confirm-action"])
@@ -23,7 +24,7 @@ const emit = defineEmits(["close-modal", "confirm-action"])
 
       <div class="card-footer text-end py-3">
         <button class="btn btn-lg btn-primary px-4" @click="emit('confirm-action', true)">
-          Delete
+          {{ okButton }}
         </button>
         <button class="btn btn-lg hover-shadow px-4" @click="emit('confirm-action', false)">
           Cancel

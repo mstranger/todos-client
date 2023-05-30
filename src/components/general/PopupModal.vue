@@ -38,6 +38,7 @@ const handleClickOuter = () => {
   height: 100%;
   justify-content: center;
   background-color: #00000050;
+  z-index: 99;
 }
 
 .modal-body {
@@ -48,7 +49,6 @@ const handleClickOuter = () => {
   margin-top: 5%;
   margin-bottom: 2em;
   position: relative;
-  z-index: 99;
   transition: 0.2s ease;
 }
 

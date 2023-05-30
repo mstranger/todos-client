@@ -138,9 +138,10 @@ const clearErrors = () => (errors.value = [])
     </ul>
 
     <ConfirmModal
-      v-show="showModal"
+      v-if="showModal"
       title="Delete task"
       body="Do you realy want to delete this task?"
+      okButton="Delete"
       @close-modal="handleCloseModal"
       @confirm-action="confirmDeletion"
     />
