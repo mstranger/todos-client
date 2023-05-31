@@ -10,9 +10,7 @@ const props = defineProps({
   utoken: { type: String, required: true }
 })
 
-// TODO: refreshTasks
 const emit = defineEmits([
-  "refreshTasks",
   "deleteTask",
   "handleErrors",
   "updateCompletedCount",
@@ -64,30 +62,6 @@ const handleEditTask = () => {
     elem.focus()
   })
 }
-
-// TODO: remove after change on server
-
-/*
-const handleChangePriority = async (n) => {
-  emit("handleErrors", [])
-
-  let taskPriority = props.data.priority
-
-  if (taskPriority === 0 && n === -1) return
-
-  const data = `data[priority]=${taskPriority + n}`
-
-  let errors = await updateTask({
-    data,
-    projectId: props.projectId,
-    taskId: props.data.id,
-    utoken: props.utoken
-  })
-
-  if (errors) emit("handleErrors", errors)
-  else emit("refreshTask", props.data.id)
-}
-*/
 
 const handleChangeOrder = async (direction) => {
   emit("handleErrors", [])

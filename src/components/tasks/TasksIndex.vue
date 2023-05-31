@@ -120,7 +120,6 @@ const clearErrors = () => (errors.value = [])
         :data="task"
         :projectId="props.projectId"
         :utoken="props.utoken"
-        @refresh-tasks="$emit('refreshTasks', props.projectId)"
         @update-order="handleUpdateOrder"
         @handle-errors="errors = $event"
         @refresh-task="refreshTask"
