@@ -7,8 +7,6 @@ import NavBar from "@/components/general/NavBar.vue"
 const store = useAuthStore()
 const router = useRouter()
 
-// TODO: flash message?
-
 // auto logout when session expired
 watch(
   () => store.didAutoLogout,

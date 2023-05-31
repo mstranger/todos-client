@@ -130,6 +130,30 @@ export const toggleDone = async ({ projectId, taskId, utoken }) => {
   return errors
 }
 
+export const changeOrder = async ({ projectId, taskId, utoken, direction }) => {
+  let errors
+  let address
+
+  if (direction === "up") address = url(projectId, taskId).up
+  if (direction === "down") address = url(projectId, taskId).down
+
+  try {
+    const response = await fetch(address, {
+      method: "POST",
+      headers: { Authorization: `HS256 ${utoken}` }
+    })
+
+    const result = await response.json()
+
+    if (!response.ok) throw new Error(result.error || "Failed to change order")
+  } catch (e) {
+    console.error(e.message)
+    errors = e.message.split()
+  }
+
+  return errors
+}
+
 /*
  * Delete a task
  */

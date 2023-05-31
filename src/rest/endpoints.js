@@ -11,7 +11,9 @@ export const taskUrls = (projectId, taskId = null) => {
   return {
     index: `${apiAddress}/projects/${projectId}/tasks`,
     task: `${apiAddress}/projects/${projectId}/tasks/${taskId}`,
-    toggle: `${apiAddress}/projects/${projectId}/tasks/${taskId}/toggle`
+    toggle: `${apiAddress}/projects/${projectId}/tasks/${taskId}/toggle`,
+    up: `${apiAddress}/projects/${projectId}/tasks/${taskId}/up`,
+    down: `${apiAddress}/projects/${projectId}/tasks/${taskId}/down`
   }
 }
 

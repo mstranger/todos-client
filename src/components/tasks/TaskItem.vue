@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, nextTick } from "vue"
 import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 import AddComment from "@/components/comments/AddComment.vue"
-import { updateTask, toggleDone } from "@/rest/actions/task"
+import { updateTask, toggleDone, changeOrder } from "@/rest/actions/task"
 
 const props = defineProps({
   data: { type: Object, required: true },
@@ -10,12 +10,14 @@ const props = defineProps({
   utoken: { type: String, required: true }
 })
 
+// TODO: refreshTasks
 const emit = defineEmits([
   "refreshTasks",
   "deleteTask",
   "handleErrors",
   "updateCompletedCount",
-  "refreshTask"
+  "refreshTask",
+  "updateOrder"
 ])
 
 const title = ref(props.data.title)
@@ -63,9 +65,9 @@ const handleEditTask = () => {
   })
 }
 
-// TODO: flash messages via storage?
+// TODO: remove after change on server
 
-// TODO: think about change position
+/*
 const handleChangePriority = async (n) => {
   emit("handleErrors", [])
 
@@ -84,6 +86,21 @@ const handleChangePriority = async (n) => {
 
   if (errors) emit("handleErrors", errors)
   else emit("refreshTask", props.data.id)
+}
+*/
+
+const handleChangeOrder = async (direction) => {
+  emit("handleErrors", [])
+
+  let errors = await changeOrder({
+    direction,
+    projectId: props.projectId,
+    taskId: props.data.id,
+    utoken: props.utoken
+  })
+
+  if (errors) emit("handleErrors", errors)
+  else emit("updateOrder", {direction, id: props.data.id})
 }
 
 const handleSaveEdit = async () => {
@@ -181,12 +198,12 @@ const resetEditMode = () => {
       <i
         class="bi bi-arrow-up-short position-absolute"
         style="top: 0.5em; left: 0.85em"
-        @click="handleChangePriority(1)"
+        @click="handleChangeOrder('up')"
       ></i>
       <i
         class="bi bi-arrow-down-short position-absolute"
         style="top: 1.5em; left: 0.85em"
-        @click="handleChangePriority(-1)"
+        @click="handleChangeOrder('down')"
       ></i>
     </span>
     <input
