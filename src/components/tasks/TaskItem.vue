@@ -76,7 +76,7 @@ const handleChangeOrder = async (direction) => {
   })
 
   if (errors) emit("handleErrors", errors)
-  else emit("updateOrder", {direction, id: props.data.id})
+  else emit("updateOrder", { direction, id: props.data.id })
 }
 
 const handleSaveEdit = async () => {

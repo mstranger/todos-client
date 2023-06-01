@@ -10,6 +10,3 @@ defineProps({ active: Boolean })
     <div class="text-secondary text-small ps-2">loading...</div>
   </div>
 </template>
-
-<style scoped>
-</style>
