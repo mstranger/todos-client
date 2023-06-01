@@ -130,6 +130,9 @@ export const toggleDone = async ({ projectId, taskId, utoken }) => {
   return errors
 }
 
+/*
+ * Move task up/down in the list
+ */
 export const changeOrder = async ({ projectId, taskId, utoken, direction }) => {
   let errors
   let address

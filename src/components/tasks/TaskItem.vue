@@ -4,6 +4,8 @@ import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 import AddComment from "@/components/comments/AddComment.vue"
 import { updateTask, toggleDone, changeOrder } from "@/rest/actions/task"
 
+// TODO: Task and Project ui when long title
+
 const props = defineProps({
   data: { type: Object, required: true },
   projectId: { type: Number, required: true },
@@ -182,7 +184,7 @@ const resetEditMode = () => {
     </span>
     <input
       type="checkbox"
-      class="task-check ms-3 me-1 mt-1"
+      class="task-check ms-3 me-1"
       :checked="props.data.completed"
       @change="handleToggleCheck"
     />
@@ -243,7 +245,7 @@ const resetEditMode = () => {
 }
 
 .project--task-item__edit {
-  line-height: 2.2em;
+  line-height: 2.1em;
   border: none;
   padding-left: 3.875em;
 }
@@ -263,6 +265,10 @@ const resetEditMode = () => {
 
 .project--task-item:hover > .task-actions {
   visibility: visible;
+}
+
+.task-check {
+  margin-top: 0.1em;
 }
 
 .task-check:hover {
