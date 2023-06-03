@@ -45,7 +45,7 @@ const refreshTask = async (taskId) => {
   })
 }
 
-const handleUpdateOrder = ({ id, direction }) => {
+const handleUpdatePosition = ({ id, direction }) => {
   let count = tasks.value.length
   let arr = tasks.value
   let idx = tasks.value.findIndex((t) => t.id === id)
@@ -120,7 +120,7 @@ const clearErrors = () => (errors.value = [])
         :data="task"
         :projectId="props.projectId"
         :utoken="props.utoken"
-        @update-order="handleUpdateOrder"
+        @update-position="handleUpdatePosition"
         @handle-errors="errors = $event"
         @refresh-task="refreshTask"
         @delete-task="handleDeleteTask"

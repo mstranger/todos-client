@@ -2,7 +2,7 @@
 import { ref, computed, onMounted, nextTick } from "vue"
 import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 import AddComment from "@/components/comments/AddComment.vue"
-import { updateTask, toggleDone, changeOrder } from "@/rest/actions/task"
+import { updateTask, toggleDone, changePosition } from "@/rest/actions/task"
 
 // TODO: Task and Project ui when long title
 
@@ -17,7 +17,7 @@ const emit = defineEmits([
   "handleErrors",
   "updateCompletedCount",
   "refreshTask",
-  "updateOrder"
+  "updatePosition"
 ])
 
 const title = ref(props.data.title)
@@ -65,10 +65,10 @@ const handleEditTask = () => {
   })
 }
 
-const handleChangeOrder = async (direction) => {
+const handleChangePosition = async (direction) => {
   emit("handleErrors", [])
 
-  let errors = await changeOrder({
+  let errors = await changePosition({
     direction,
     projectId: props.projectId,
     taskId: props.data.id,
@@ -76,7 +76,7 @@ const handleChangeOrder = async (direction) => {
   })
 
   if (errors) emit("handleErrors", errors)
-  else emit("updateOrder", { direction, id: props.data.id })
+  else emit("updatePosition", { direction, id: props.data.id })
 }
 
 const handleSaveEdit = async () => {
@@ -174,12 +174,12 @@ const resetEditMode = () => {
       <i
         class="bi bi-arrow-up-short position-absolute"
         style="top: 0.5em; left: 0.85em"
-        @click="handleChangeOrder('up')"
+        @click="handleChangePosition('up')"
       ></i>
       <i
         class="bi bi-arrow-down-short position-absolute"
         style="top: 1.5em; left: 0.85em"
-        @click="handleChangeOrder('down')"
+        @click="handleChangePosition('down')"
       ></i>
     </span>
     <input
