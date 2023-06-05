@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch, computed, onUnmounted } from "vue"
+import { ref, watch, computed } from "vue"
 import TaskItem from "@/components/tasks/TaskItem.vue"
 import { getTask, createTask, deleteTask } from "@/rest/actions/task"
 import ConfirmModal from "@/components/general/ConfirmModal.vue"
@@ -17,7 +17,6 @@ const newTask = ref("")
 const errors = ref([])
 const showModal = ref(false)
 const taskIdToDelete = ref(null)
-const needRefresh = ref(false)
 
 const hasErrors = computed(() => errors.value.length > 0)
 
@@ -26,39 +25,25 @@ watch(
   () => (tasks.value = props.data)
 )
 
-onUnmounted(() => {
-  if (!needRefresh.value) return
-  emit("refreshTasks")
-  needRefresh.value = false
-})
-
 /* actions */
 
 const refreshTask = async (taskId) => {
   const elem = await getTask({ projectId: props.projectId, utoken: props.utoken, taskId })
   const idx = props.data.findIndex((t) => t.id === elem.id)
-
   tasks.value.splice(idx, 1, elem)
-  tasks.value.sort((t1, t2) => {
-    if (t1.priority === t2.priority) return new Date(t1.created_at) - new Date(t2.created_at)
-    return t2.priority - t1.priority
-  })
 }
 
 const handleUpdatePosition = ({ id, direction }) => {
   let count = tasks.value.length
-  let arr = tasks.value
   let idx = tasks.value.findIndex((t) => t.id === id)
 
   if (direction === "up" && idx > 0) {
-    tasks.value = [...arr.slice(0, idx - 1), arr[idx], arr[idx - 1], ...arr.slice(idx + 1)]
+    ;[tasks.value[idx], tasks.value[idx - 1]] = [tasks.value[idx - 1], tasks.value[idx]]
   }
 
   if (direction === "down" && idx < count - 1) {
-    tasks.value = [...arr.slice(0, idx), arr[idx + 1], arr[idx], ...arr.slice(idx + 2)]
+    ;[tasks.value[idx], tasks.value[idx + 1]] = [tasks.value[idx + 1], tasks.value[idx]]
   }
-
-  needRefresh.value = true
 }
 
 const handleDeleteTask = (taskId) => {
