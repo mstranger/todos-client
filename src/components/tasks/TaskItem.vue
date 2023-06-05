@@ -4,8 +4,6 @@ import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 import AddComment from "@/components/comments/AddComment.vue"
 import { updateTask, toggleDone, changePosition } from "@/rest/actions/task"
 
-// TODO: Task and Project ui when long title
-
 const props = defineProps({
   data: { type: Object, required: true },
   projectId: { type: Number, required: true },
@@ -170,15 +168,15 @@ const resetEditMode = () => {
   </Teleport>
 
   <li v-if="!editMode" class="project--task-item position-relative d-flex align-items-center">
-    <span class="task-actions">
+    <span class="task-actions position-relative">
       <i
         class="bi bi-arrow-up-short position-absolute"
-        style="top: 0.5em; left: 0.85em"
+        style="top: -1em; left: -0.35em"
         @click="handleChangePosition('up')"
       ></i>
       <i
+        style="top: 0.1em; left: -0.35em"
         class="bi bi-arrow-down-short position-absolute"
-        style="top: 1.5em; left: 0.85em"
         @click="handleChangePosition('down')"
       ></i>
     </span>

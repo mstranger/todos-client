@@ -78,7 +78,7 @@ const resetEditMode = () => {
       <div class="project-name ms-1 px-2">{{ title }}</div>
 
       <div class="project-actions ms-auto me-4" @click="(e) => e.stopPropagation()">
-        <i class="bi bi-pencil-fill me-3" @click="handleEditProject"></i>
+        <i class="bi bi-pencil-fill" @click="handleEditProject"></i>
         <i
           class="bi bi-trash"
           style="font-size: 1.0725em"
@@ -119,6 +119,10 @@ const resetEditMode = () => {
   margin-bottom: 0.5em;
 }
 
+.project-name {
+  line-height: 2.1em;
+}
+
 .project--edit {
   line-height: 2.2em;
   padding-left: 3.1em;
@@ -131,8 +135,8 @@ const resetEditMode = () => {
 .project-main {
   border: 1px solid lightgray;
   border-bottom: none;
-  line-height: 3em;
-  padding-left: 0.35em;
+  padding: 0.45em 0 0.45em 0.35em;
+  align-items: baseline;
   background-color: #e1e7f3;
   font-weight: 500;
 }
@@ -148,6 +152,10 @@ const resetEditMode = () => {
 
 .project-actions {
   visibility: hidden;
+}
+
+.bi-pencil-fill {
+  margin-right: 0.75em;
 }
 
 .bi-pencil-fill:hover,
