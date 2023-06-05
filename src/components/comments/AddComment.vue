@@ -49,7 +49,8 @@ const handleDeleteComment = async (id) => {
 
 const handleCloseModal = () => {
   emit("close-modal")
-  if (errors.value.length > 0) errors.value = []
+  errors.value = []
+  attachment.value = null
 }
 </script>
 
