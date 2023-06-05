@@ -2,6 +2,7 @@
 import { ref, onMounted, watch, computed, nextTick } from "vue"
 import TasksIndex from "@/components/tasks/TasksIndex.vue"
 import { requestTasks } from "@/rest/actions/task"
+import { useDark } from "@vueuse/core"
 
 const emit = defineEmits(["handleErrors", "editProject", "deleteProject"])
 
@@ -9,6 +10,8 @@ const props = defineProps({
   data: { type: Object, required: true },
   utoken: { type: String, required: true }
 })
+
+const isDark = useDark()
 
 const title = ref(props.data.attributes.name)
 const tasks = ref([])
@@ -63,11 +66,16 @@ const resetEditMode = () => {
 
 <template>
   <div class="project">
-    <div v-if="!editMode" class="project-main d-flex position-relative" @click="closed = !closed">
+    <div
+      v-if="!editMode"
+      class="project-main d-flex position-relative"
+      :class="{ 'theme-mode--light': !isDark, 'theme-mode--dark': isDark }"
+      @click="closed = !closed"
+    >
       <span
         v-if="tasks.length > 0 && allTasksDone"
         class="d-block position-absolute text-success"
-        style="top: -0.7em; left: 0.15em; font-size: 1.25em"
+        style="top: -0.25em; left: 0.15em; font-size: 1.25em"
       >
         <i class="bi bi-check-all"></i>
       </span>
@@ -133,17 +141,21 @@ const resetEditMode = () => {
 }
 
 .project-main {
-  border: 1px solid lightgray;
-  border-bottom: none;
   padding: 0.45em 0 0.45em 0.35em;
   align-items: baseline;
-  background-color: #e1e7f3;
   font-weight: 500;
 }
 
 .project-main:hover {
   cursor: pointer;
+}
+
+.theme-mode--light {
   background-color: #cfd8ec;
+}
+
+.theme-mode--dark {
+  background-color: #454646;
 }
 
 .project-main:hover > .project-actions {

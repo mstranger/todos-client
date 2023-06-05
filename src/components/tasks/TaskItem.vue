@@ -3,6 +3,7 @@ import { ref, computed, onMounted, nextTick } from "vue"
 import DeadlineForm from "@/components/tasks/DeadlineForm.vue"
 import AddComment from "@/components/comments/AddComment.vue"
 import { updateTask, toggleDone, changePosition } from "@/rest/actions/task"
+import { useDark } from "@vueuse/core"
 
 const props = defineProps({
   data: { type: Object, required: true },
@@ -17,6 +18,8 @@ const emit = defineEmits([
   "refreshTask",
   "updatePosition"
 ])
+
+const isDark = useDark()
 
 const title = ref(props.data.title)
 const editMode = ref(false)
@@ -167,7 +170,11 @@ const resetEditMode = () => {
     />
   </Teleport>
 
-  <li v-if="!editMode" class="project--task-item position-relative d-flex align-items-center">
+  <li
+    v-if="!editMode"
+    class="project--task-item position-relative d-flex align-items-center"
+    :style="{borderColor: isDark ? 'dimgray' : 'lightgray'}"
+  >
     <span class="task-actions position-relative">
       <i
         class="bi bi-arrow-up-short position-absolute"
@@ -258,7 +265,7 @@ const resetEditMode = () => {
 }
 
 .project--task-item:hover {
-  background-color: rgb(250, 250, 250);
+  background-color: oklch(0 0 0 / 0.05);
 }
 
 .project--task-item:hover > .task-actions {

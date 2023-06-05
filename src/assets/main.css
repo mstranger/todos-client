@@ -26,7 +26,7 @@ input:focus {
 }
 
 .hover-shadow:hover {
-  box-shadow: 2px 0px 3px lightgray;
+  box-shadow: 1px 0px 2px dimgray;
 }
 
 .text-small {
