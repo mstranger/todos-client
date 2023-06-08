@@ -1,4 +1,4 @@
-# README
+# Todos client
 
 Client application for my [todos-api](https://github.com/mstranger/todos-api) server.
 
@@ -7,4 +7,5 @@ Client application for my [todos-api](https://github.com/mstranger/todos-api) se
 ```bash
 npm install
 npm run dev
+open http://localhost:5173/
 ```
