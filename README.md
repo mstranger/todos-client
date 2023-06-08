@@ -1,6 +1,6 @@
 # README
 
-Client application for using my API [todos](https://github.com/mstranger/todos-api) server.
+Client application for my [todos-api](https://github.com/mstranger/todos-api) server.
 
 ## Running
 
