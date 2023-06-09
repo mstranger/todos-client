@@ -161,7 +161,7 @@ const resetEditMode = () => {
 <template>
   <Teleport to="body">
     <AddComment
-      v-show="showModal"
+      v-if="showModal"
       :projectId="props.projectId"
       :taskId="props.data.id"
       :utoken="props.utoken"
@@ -173,7 +173,7 @@ const resetEditMode = () => {
   <li
     v-if="!editMode"
     class="project--task-item position-relative d-flex align-items-center"
-    :style="{borderColor: isDark ? 'dimgray' : 'lightgray'}"
+    :style="{ borderColor: isDark ? 'dimgray' : 'lightgray' }"
   >
     <span class="task-actions position-relative">
       <i

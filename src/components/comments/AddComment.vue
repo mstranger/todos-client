@@ -46,12 +46,6 @@ const handleDeleteComment = async (id) => {
   emit("changeCommentsCount", -1)
   getComments()
 }
-
-const handleCloseModal = () => {
-  emit("close-modal")
-  errors.value = []
-  attachment.value = null
-}
 </script>
 
 <template>
@@ -59,7 +53,7 @@ const handleCloseModal = () => {
     <div class="card pb-4">
       <div class="card-header d-flex align-items-center justify-content-between">
         <h5 class="h5 my-2">Add Comment</h5>
-        <button type="button" class="btn-close" @click="handleCloseModal"></button>
+        <button type="button" class="btn-close" @click="emit('close-modal')"></button>
       </div>
 
       <div class="card-body">
@@ -96,7 +90,7 @@ const handleCloseModal = () => {
           </div>
           <div class="text-end">
             <button type="submit" class="btn btn-lg btn-primary px-5">Save</button>
-            <button class="btn btn-lg hover-shadow px-4" @click.prevent="handleCloseModal">
+            <button class="btn btn-lg hover-shadow px-4" @click.prevent="emit('close-modal')">
               Cancel
             </button>
           </div>
