@@ -1,4 +1,7 @@
-const apiAddress = "http://localhost:3000/api/v1"
+// const apiAddress = "http://localhost:3000/api/v1"
+
+const hostname = "https://todos-server-atmu.onrender.com"
+const apiAddress = `${hostname}/api/v1`
 
 export const projectUrls = (projectId = null) => {
   return {
@@ -26,7 +29,7 @@ export const commentUrls = (projectId, taskId, commentId = null) => {
 
 export const authUrls = () => {
   return {
-    signin: "http://localhost:3000/auth/login",
-    signup: "http://localhost:3000/auth/signup"
+    signin: `${hostname}/auth/login`,
+    signup: `${hostname}/auth/signup`
   }
 }
