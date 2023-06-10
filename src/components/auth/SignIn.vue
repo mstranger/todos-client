@@ -4,6 +4,8 @@ import { useRouter } from "vue-router"
 import { useAuthStore } from "@/store"
 import { authUrls as url } from "@/rest/endpoints"
 
+// TODO: show loader while request
+
 const error = ref("")
 const store = useAuthStore()
 const router = useRouter()
