@@ -1,5 +1,4 @@
-// const apiAddress = "http://localhost:3000/api/v1"
-
+// const hostname = "http://localhost:3000"
 const hostname = "https://todos-server-atmu.onrender.com"
 const apiAddress = `${hostname}/api/v1`
 

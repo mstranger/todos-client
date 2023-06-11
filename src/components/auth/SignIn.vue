@@ -3,12 +3,12 @@ import { ref } from "vue"
 import { useRouter } from "vue-router"
 import { useAuthStore } from "@/store"
 import { authUrls as url } from "@/rest/endpoints"
-
-// TODO: show loader while request
+import RequestLoader from "@/components/general/RequestLoader.vue"
 
 const error = ref("")
 const store = useAuthStore()
 const router = useRouter()
+const inProgress = ref(false)
 
 const handleSignIn = async (event) => {
   const emailField = event.target.querySelector("input[name=email]")
@@ -17,6 +17,8 @@ const handleSignIn = async (event) => {
   removeInvalidClass(emailField, passwordField)
 
   try {
+    inProgress.value = true
+
     const response = await fetch(url().signin, {
       method: "POST",
       body: new FormData(event.target)
@@ -34,6 +36,7 @@ const handleSignIn = async (event) => {
     emailField.classList.add("invalid")
     passwordField.classList.add("invalid")
     error.value = e.message
+    inProgress.value = false
   }
 }
 
@@ -45,7 +48,8 @@ const removeInvalidClass = (...fields) => {
 
 <template>
   <div class="d-flex justify-content-center align-items-center h-100 parent">
-    <form class="col-10 col-sm-6 col-lg-4" @submit.prevent="handleSignIn">
+    <RequestLoader v-show="inProgress" :active="inProgress" />
+    <form v-show="!inProgress" class="col-10 col-sm-6 col-lg-4" @submit.prevent="handleSignIn">
       <h3 class="mb-3">Sign In</h3>
       <div class="mb-2 text-danger">{{ error }}</div>
 

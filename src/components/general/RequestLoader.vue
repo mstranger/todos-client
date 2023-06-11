@@ -1,5 +1,7 @@
 <script setup>
-defineProps({ active: Boolean })
+defineProps({
+  active: {type: Boolean, required: true}
+})
 </script>
 
 <template>

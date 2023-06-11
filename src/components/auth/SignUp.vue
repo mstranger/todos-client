@@ -1,10 +1,12 @@
 <script setup>
 import { ref } from "vue"
 import { authUrls as url } from "@/rest/endpoints"
+import RequestLoader from "@/components/general/RequestLoader.vue"
 
 const required = ref("")
 const errors = ref([])
 const success = ref(false)
+const inProgress = ref(false)
 
 const handleSignUp = async (e) => {
   if (checkEmptyInputs()) {
@@ -16,6 +18,8 @@ const handleSignUp = async (e) => {
   errors.value = []
 
   try {
+    inProgress.value = true
+
     const response = await fetch(url().signup, {
       method: "POST",
       body: new FormData(e.target)
@@ -32,6 +36,8 @@ const handleSignUp = async (e) => {
     errors.value = e.message.split("|")
     addInvalidClass(errors.value, "email", "password", "password_confirmation")
   }
+
+  inProgress.value = false
 }
 
 const checkEmptyInputs = () => {
@@ -68,7 +74,8 @@ const addInvalidClass = (errs, ...inputs) => {
 
 <template>
   <div class="d-flex justify-content-center align-items-center h-100 parent">
-    <form class="col-10 col-sm-6 col-lg-4" @submit.prevent="handleSignUp">
+    <RequestLoader v-show="inProgress" :active="inProgress" />
+    <form v-show="!inProgress" class="col-10 col-sm-6 col-lg-4" @submit.prevent="handleSignUp">
       <h3 class="mb-3">Sign Up</h3>
 
       <div class="text-danger">
