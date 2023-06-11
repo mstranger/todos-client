@@ -21,6 +21,11 @@ const inProgress = ref(true)
 
 onMounted(async () => {
   projects.value = await requestProjects({ utoken, errors })
+
+  if (store.isAuthenticated && errors.value[0] === "Please, sign in first") {
+    store.logout()
+  }
+
   inProgress.value = false
 })
 
